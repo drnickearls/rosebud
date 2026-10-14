@@ -164,7 +164,7 @@
 - Git tag **`stable-2026-10-14`** = commit `ebde1ac` = release v0.1.2: chart and schedule printing, provider/name/age/D.O.B. sizes, "0" balance, drag-and-drop form settings, front desk guide; live-tested on fake patients; 23 tests pass. To get back to it: `git checkout stable-2026-10-14` (or `git switch -c recover stable-2026-10-14`). The v0.1.2 release zip is the installable copy.
 - Architecture changes after this point should happen on a branch (e.g. `git switch -c architecture`), so main stays releasable.
 
-## Architecture change (2026-10-14, branch `architecture`, not merged)
+## Architecture change (2026-10-14, merged to main, released as v0.1.3)
 - Plan and reasons: docs/ARCHITECTURE-HANDOFF.md. Done: steps 1-4 and the two further candidates (saved form, form editor).
 - **Routing Forms module** `src/routingForms/` (`createRoutingForms({ ehr, form, now })` -> `offer(mode)` / `print(choice)`): reads RevolutionEHR only through the **`Ehr` port** (`src/routingForms/ehr.ts`); never touches the page, tabs or `fetch`. Inside: plan (visits, order, notes) then draw. Status filter (2/5/6) and "today's appointment = earliest at the primary location" live here.
 - Production adapter `src/ehr/revolution.ts` (services -> Rosebud terms: UTC to local once, names trimmed, birth date by its date part) + `src/ehr/screen.ts` (screen context only: chart id from the address, schedule date, provider columns, open appointment's patient id + time). `src/ehr/api.ts` = raw read-only calls. `app.ts` = chooser glue + PDF tab + messages.
@@ -177,4 +177,4 @@
 - Fixes found while checking: clicking a field box now focuses it, so arrow keys work (bug also in v0.1.2); pdf.js asked for errors only (its harmless font warning showed under Edge's Errors button).
 - 58 tests pass. Settings page checked in a local stand-in (9 boxes, drag snap, Shift+arrow, A-, Save, damaged file, reset) and live: a saved Name size of 18 printed at 18 on Potter, Albus's chart, then reset.
 - Live-check order: rebuild -> reload Rosebud -> reload RevolutionEHR (signs out) and sign in. Reloading or closing that tab signs the user out.
-- Next: user's go-ahead to merge to main and cut a release (version bump, zip, guide check).
+- Released **v0.1.3** (commit f9ed901, tag `v0.1.3`): zip + guide PDF on GitHub, marked latest. To go back to v0.1.2: tag `stable-2026-10-14`.
