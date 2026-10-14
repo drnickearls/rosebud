@@ -7,6 +7,8 @@ import { groupByProvider, type ScheduleEntry } from '../src/core/schedule.js';
 test('lastNameOnly keeps the part before the comma', () => {
   assert.equal(lastNameOnly('Dumbledore, Albus'), 'Dumbledore');
   assert.equal(lastNameOnly('  Bollier-Smith ,  Dan '), 'Bollier-Smith');
+  assert.equal(lastNameOnly('Earls, Nick'), 'Earls'); // a last name ending in s stays whole
+  assert.equal(lastNameOnly('Weiss,  Susan'), 'Weiss');
   assert.equal(lastNameOnly('Cher'), 'Cher');
   assert.equal(lastNameOnly(''), '');
 });

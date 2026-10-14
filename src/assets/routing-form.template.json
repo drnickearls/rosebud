@@ -27,7 +27,7 @@
       "key": "name",
       "x": 59.6,
       "y": 735,
-      "size": 24,
+      "size": 20,
       "maxWidth": 166,
       "bold": true
     },
@@ -43,7 +43,7 @@
       "key": "age",
       "x": 371.5,
       "y": 735,
-      "size": 24,
+      "size": 20,
       "maxWidth": 52,
       "bold": true
     },

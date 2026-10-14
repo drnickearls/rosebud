@@ -14,7 +14,7 @@ export function firstLast(chartName: string): string {
 
 /** "Dumbledore, Albus" becomes "Dumbledore" (the provider is printed by last name only). */
 export function lastNameOnly(chartName: string): string {
-  const name = chartName.replace(/s+/g, ' ').trim();
+  const name = chartName.replace(/\s+/g, ' ').trim();
   const comma = name.indexOf(',');
   return (comma < 0 ? name : name.slice(0, comma)).trim();
 }
