@@ -1,6 +1,6 @@
 # Architecture change: handoff
 
-**Status (2026-10-14): steps 1-4 DONE** on `architecture` (live-checked on fake data; see TODO.md "Architecture change"). Waiting for the user's go-ahead to merge to main and release.
+**Status (2026-10-14): steps 1-4 and the saved-form and form-editor candidates DONE** on `architecture` (live-checked on fake data; see TODO.md "Architecture change"). Waiting for the user's go-ahead to merge to main and release.
 
 Branch: `architecture` (from `main` at the stable tag `stable-2026-10-14` = release v0.1.2). `main` stays releasable; merge only when everything below is done and live-checked.
 
