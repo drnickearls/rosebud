@@ -52,3 +52,9 @@ test('a form saved with the old three-piece birth date is carried over', () => {
   });
   assert.deepEqual(t.fields, [{ key: 'dob', x: 272.6, y: 734, size: 10, maxWidth: 62 }]);
 });
+
+test('bold is carried through and checked', () => {
+  const t = validateTemplate({ fields: [{ key: 'name', x: 1, y: 2, bold: true }, { key: 'age', x: 3, y: 4 }] });
+  assert.deepEqual(t.fields, [{ key: 'name', x: 1, y: 2, bold: true }, { key: 'age', x: 3, y: 4 }]);
+  assert.throws(() => validateTemplate({ fields: [{ key: 'name', x: 1, y: 2, bold: 'yes' }] }), /bold setting/);
+});

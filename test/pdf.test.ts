@@ -6,6 +6,7 @@ import { buildPdf } from '../src/core/pdf.js';
 import type { FormValues, PrintPart } from '../src/core/types.js';
 
 const values: FormValues = {
+  provider: 'Provider A',
   date: '10/13/2026',
   appointmentTime: '9:00 PM',
   name: 'Harry Potter',

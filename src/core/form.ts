@@ -4,6 +4,7 @@ import type { FormValues } from './types.js';
 
 /** Every value Rosebud can print, in the order the settings page lists them (CONTEXT.md, "Pre-filled Field"). */
 export const FIELD_KEYS = [
+  'provider',
   'date',
   'appointmentTime',
   'name',
@@ -15,6 +16,7 @@ export const FIELD_KEYS = [
 ] as const satisfies readonly (keyof FormValues)[];
 
 export const FIELD_LABELS: Record<keyof FormValues, string> = {
+  provider: 'Provider',
   date: 'Date',
   appointmentTime: 'Appointment Time',
   name: 'Name',
@@ -27,6 +29,7 @@ export const FIELD_LABELS: Record<keyof FormValues, string> = {
 
 /** Made-up values for a test print, longer than usual so a field that is too small shows up. */
 export const SAMPLE_VALUES: FormValues = {
+  provider: 'Albus Dumbledore',
   date: '10/13/2026',
   appointmentTime: '10:40 AM',
   name: 'Harry Potter',
@@ -63,7 +66,9 @@ export function validateTemplate(raw: unknown): FormTemplate {
     if (!isNumber(f.x) || !isNumber(f.y)) throw new Error(`The field "${key}" needs a number for x and for y.`);
     if (f.size !== undefined && (!isNumber(f.size) || f.size <= 0)) throw new Error(`The size of "${key}" must be a number above 0.`);
     if (f.maxWidth !== undefined && (!isNumber(f.maxWidth) || f.maxWidth <= 0)) throw new Error(`The maximum width of "${key}" must be a number above 0.`);
+    if (f.bold !== undefined && typeof f.bold !== 'boolean') throw new Error(`The bold setting of "${key}" must be true or false.`);
     const field: TemplateField = { key: key as keyof FormValues, x: f.x, y: f.y };
+    if (f.bold) field.bold = true;
     if (f.size !== undefined) field.size = f.size as number;
     if (f.maxWidth !== undefined) field.maxWidth = f.maxWidth as number;
     return field;

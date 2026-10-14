@@ -13,6 +13,7 @@ interface Placed {
   y: number;
   size: number;
   maxWidth?: number;
+  bold?: boolean;
 }
 interface Draft {
   name: string;
@@ -28,14 +29,14 @@ const snap = (n: number) => Math.round(n / SNAP) * SNAP;
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 const ctx = document.createElement('canvas').getContext('2d')!;
-const textWidth = (text: string, size: number) => {
-  ctx.font = `${size}px Helvetica, Arial, sans-serif`;
+const textWidth = (text: string, size: number, bold = false) => {
+  ctx.font = `${bold ? "bold " : ""}${size}px Helvetica, Arial, sans-serif`;
   return ctx.measureText(text).width;
 };
 /** The same shrink-to-fit rule the PDF uses (src/core/pdf.ts), so the preview matches the print. */
-function fitSize(text: string, size: number, maxWidth?: number): number {
+function fitSize(text: string, size: number, maxWidth?: number, bold = false): number {
   let s = size;
-  if (maxWidth) while (s > 6 && textWidth(text, s) > maxWidth) s -= 0.5;
+  if (maxWidth) while (s > 6 && textWidth(text, s, bold) > maxWidth) s -= 0.5;
   return s;
 }
 
@@ -44,6 +45,7 @@ function draftOf(assets: FormAssets): Draft {
   for (const f of assets.template.fields) {
     const placed: Placed = { x: f.x, y: f.y, size: f.size ?? 10 };
     if (f.maxWidth !== undefined) placed.maxWidth = f.maxWidth;
+    if (f.bold) placed.bold = true;
     fields[f.key] = placed;
   }
   return { name: assets.template.name, blankPdf: assets.blankPdf, fields };
@@ -55,6 +57,7 @@ function assetsOf(draft: Draft): FormAssets {
     if (!p) return [];
     const f: TemplateField = { key, x: p.x, y: p.y, size: p.size };
     if (p.maxWidth !== undefined) f.maxWidth = p.maxWidth;
+    if (p.bold) f.bold = true;
     return [f];
   });
   return { blankPdf: draft.blankPdf, template: validateTemplate({ name: draft.name, fields }) };
@@ -302,6 +305,10 @@ export function App() {
                   A+
                 </button>
               </div>
+              <label class="line">
+                <input type="checkbox" checked={!!sel.bold} onChange={() => setField(selected, { bold: !sel.bold })} />
+                <span>Bold</span>
+              </label>
               <div class="line">
                 <span>Arrow keys nudge the selected box (Shift = bigger steps).</span>
               </div>
@@ -366,8 +373,8 @@ interface BoxProps {
 function FieldBox({ name, field, selected, pageHeight, pageWidth, onSelect, onChange }: BoxProps) {
   const text = SAMPLE_VALUES[name];
   const drag = useRef<{ mode: 'move' | 'resize'; px: number; py: number; x: number; y: number; width: number } | null>(null);
-  const size = fitSize(text, field.size, field.maxWidth);
-  const naturalWidth = textWidth(text, size);
+  const size = fitSize(text, field.size, field.maxWidth, field.bold);
+  const naturalWidth = textWidth(text, size, field.bold);
   const width = field.maxWidth ?? naturalWidth;
   const left = field.x * SCALE;
   const top = (pageHeight - field.y) * SCALE - 0.85 * size * SCALE;
@@ -412,7 +419,7 @@ function FieldBox({ name, field, selected, pageHeight, pageWidth, onSelect, onCh
       title={FIELD_LABELS[name]}
     >
       <span class="tag">{FIELD_LABELS[name]}</span>
-      <span class="sample" style={{ fontSize: size * SCALE, lineHeight: 1 }}>
+      <span class="sample" style={{ fontSize: size * SCALE, lineHeight: 1, fontWeight: field.bold ? 700 : 400 }}>
         {text}
       </span>
       <span class="grip" onPointerDown={start('resize')} onPointerMove={move} onPointerUp={end} title="Drag to set the maximum width" />

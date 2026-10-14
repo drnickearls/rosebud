@@ -9,6 +9,8 @@ export interface TemplateField {
   size?: number;
   /** The text shrinks (to a floor of 6pt) until it fits this width. */
   maxWidth?: number;
+  /** Printed in bold (for what must be read from across the room). */
+  bold?: boolean;
 }
 
 /** The Form Template: field positions for one blank Routing Form artwork. */
@@ -43,10 +45,11 @@ function fit(text: string, font: PDFFont, size: number, maxWidth?: number): numb
   return s;
 }
 
-function drawForm(page: PDFPage, font: PDFFont, template: FormTemplate, values: FormValues): void {
+function drawForm(page: PDFPage, fonts: { regular: PDFFont; bold: PDFFont }, template: FormTemplate, values: FormValues): void {
   for (const f of template.fields) {
     const raw = values[f.key];
     if (!raw) continue;
+    const font = f.bold ? fonts.bold : fonts.regular;
     const text = drawable(raw, font);
     page.drawText(text, { x: f.x, y: f.y, size: fit(text, font, f.size ?? 10, f.maxWidth), font, color: rgb(0, 0, 0) });
   }
@@ -103,7 +106,7 @@ export async function buildPdf(
     } else {
       const [page] = await out.copyPages(blank, [0]);
       out.addPage(page!);
-      drawForm(page!, font, assets.template, part.values);
+      drawForm(page!, { regular: font, bold }, assets.template, part.values);
       await onForm?.(++done, total);
     }
   }

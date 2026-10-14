@@ -87,6 +87,7 @@ export interface NextAppointment {
   appointmentId: number;
   startDate: string;
   templateName: string;
+  provider?: { lastName: string; firstName: string } | null;
 }
 
 export async function nextAppointment(patientId: string, signal?: AbortSignal): Promise<NextAppointment | null> {

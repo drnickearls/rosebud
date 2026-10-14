@@ -66,6 +66,7 @@ function newRun(ui: Ui) {
 }
 
 interface Appointment {
+  provider: string; // "Last, First", or ''
   date: CalendarDate;
   time: string;
   examType: string;
@@ -120,7 +121,7 @@ export async function printFromChart(ui: Ui): Promise<void> {
 
     const values = formValues(
       { chartName: chart.chartName, dob: chart.dob, patientId: chart.patientId, patientBalance: chart.balance },
-      { date, time, examType, rfv: parseRfv(appointment?.comments) },
+      { provider: appointment?.provider ?? '', date, time, examType, rfv: parseRfv(appointment?.comments) },
     );
     run.signal.throwIfAborted();
     const pdf = await buildPdf([{ kind: 'form', values }], (await currentForm()).assets, progress(run, 'Routing Forms completed'));
@@ -146,7 +147,8 @@ async function findAppointment(
       if (!next) throw new Error('RevolutionEHR lists no next appointment.');
       const when = localWhen(next.startDate);
       const detail = await appointmentDetail(next.appointmentId, signal);
-      return { ...when, examType: detail.template?.name ?? next.templateName, comments: detail.description ?? '' };
+      const provider = next.provider ? `${next.provider.lastName.trim()}, ${next.provider.firstName.trim()}` : '';
+      return { ...when, provider, examType: detail.template?.name ?? next.templateName, comments: detail.description ?? '' };
     }
     const location = await primaryLocationId(patientId, signal);
     const mine = (await scheduleDay(today, location, signal))
@@ -155,7 +157,7 @@ async function findAppointment(
     const first = mine[0];
     if (!first) throw new Error(`${firstLast(chartName)} is not on today's schedule.`);
     const detail = await appointmentDetail(first.scheduleItemId, signal);
-    return { ...localWhen(first.startDate), examType: detail.template?.name ?? first.template, comments: detail.description ?? '' };
+    return { ...localWhen(first.startDate), provider: providerLabel(first), examType: detail.template?.name ?? first.template, comments: detail.description ?? '' };
   } catch (error) {
     if (isAbort(error)) throw error;
     warnings.push(
@@ -241,7 +243,7 @@ export async function printFromSchedule(ui: Ui): Promise<void> {
         kind: 'form',
         values: formValues(
           { chartName: item.chartName, dob, patientId: item.patientId, patientBalance: balance === null ? null : String(balance) },
-          { date, time: item.time, examType: examTypeOf(item), rfv: parseRfv(detail?.description) },
+          { provider: item.provider, date, time: item.time, examType: examTypeOf(item), rfv: parseRfv(detail?.description) },
         ),
       });
     });

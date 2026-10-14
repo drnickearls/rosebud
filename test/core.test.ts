@@ -69,9 +69,10 @@ test('Reason For Visit line', () => {
 test('formValues puts it together', () => {
   const v = formValues(
     { chartName: 'Potter, Harry', dob: { year: 1980, month: 7, day: 31 }, patientId: '117820477', patientBalance: '$0.00' },
-    { date: { year: 2026, month: 10, day: 13 }, time: '9:00 PM', examType: 'Long Medical', rfv: null },
+    { provider: 'Dumbledore, Albus', date: { year: 2026, month: 10, day: 13 }, time: '9:00 PM', examType: 'Long Medical', rfv: null },
   );
   assert.deepEqual(v, {
+    provider: 'Albus Dumbledore',
     date: '10/13/2026',
     appointmentTime: '9:00 PM',
     name: 'Harry Potter',

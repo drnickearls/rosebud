@@ -77,6 +77,8 @@ export interface PatientFacts {
 }
 
 export interface AppointmentFacts {
+  /** The provider as the schedule shows them ("Last, First"), or '' when unknown. */
+  provider: string;
   date: CalendarDate;
   time: string; // "9:00 PM", or '' when it couldn't be found
   examType: string; // already cleaned
@@ -86,6 +88,7 @@ export interface AppointmentFacts {
 /** One Routing Form's worth of values from what was read. */
 export function formValues(patient: PatientFacts, appointment: AppointmentFacts): FormValues {
   return {
+    provider: firstLast(appointment.provider),
     date: formatUsDate(appointment.date),
     appointmentTime: appointment.time,
     name: firstLast(patient.chartName),
