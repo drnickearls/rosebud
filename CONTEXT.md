@@ -17,7 +17,7 @@ The blank Routing Form artwork plus the position and style of each Pre-filled Fi
 _Avoid_: spreadsheet, layout
 
 **Balance Due**:
-The dollar amount the patient owes, printed on the Routing Form's "Balance due" line; left blank when it is zero.
+The dollar amount the patient owes, printed on the Routing Form's "Balance due" line as dollars and cents, or as "0" when nothing is owed (blank only if the balance could not be read).
 
 (Balance Due = RevolutionEHR's **Patient Balance** on the Account panel — not Insurance Balance, Family Balance or any credit. Settled 2026-10-13.)
 

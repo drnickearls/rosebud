@@ -46,7 +46,7 @@
 - `tools/fill.mjs <template.json> <values.json> <out.pdf>` (pdf-lib) + `tools/find-text.mjs <pdf> [regex]` (pdfjs: lists text positions) + `template/routing-form.template.json` (field positions in PDF points) + `template/sample-values.json`. Output: `out/sample.pdf`. First placement attempt landed on the blanks.
 - DOB prints as three pieces (month/day/year) because the form pre-prints the slashes.
 - Known flaws in the LibreOffice blank (vs. the Excel original): "Fit disc: ... 50%" lost its 50%; some columns crowd ("Eye Med AE Assurance", "IU Health IU MC", "Medicare Sagamore"); Wingdings arrows print as "ð". Decide: fix in the sheet before re-export, or redraw the blank.
-- Balance Due must print blank when $0.00 (the sample file has 0.00 only to test placement).
+- Balance Due prints "0" at $0.00 (changed 2026-10-14; it used to stay blank) (the sample file has 0.00 only to test placement).
 
 ## Form edits done (2026-10-13)
 - `form/Routing Form 10 12 2026 (edited).xlsx` = copy of the original with: the "ð" symbols replaced by "□" (Calibri); C48's blank-space cell cleared so "Fit disc … 50%" is no longer cut off; columns C, D, H widened to 10. Original untouched. `form/blank-routing-form.pdf` is now the export of the edited copy; the first export is kept as `form/blank-routing-form.v1-original.pdf`. Template coordinates re-tuned; `out/sample.pdf` regenerated.

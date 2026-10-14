@@ -61,13 +61,13 @@ export function timeToMinutes(text: string): number | null {
   return hour * 60 + Number(m[2]);
 }
 
-/** "$0.00", "0", "12.5", "$1,234.50" to "12.50"; '' when nothing is owed (or unreadable). */
+/** "$12.5", "$1,234.50" to "12.50", and a zero balance to "0"; '' only when the balance could not be read. */
 export function balanceText(text: string | null | undefined): string {
   if (!text) return '';
   const cleaned = text.replace(/[$,\s]/g, '');
   if (!/^\d+(\.\d+)?$/.test(cleaned)) return '';
   const value = Number(cleaned);
-  return value > 0 ? value.toFixed(2) : '';
+  return value > 0 ? value.toFixed(2) : '0';
 }
 
 /** What goes on the Reason For Visit line: `Exam type — reason`, or just the exam type. */

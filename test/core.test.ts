@@ -31,8 +31,9 @@ test('ageOn: whole years, months under two years, birthday not yet reached', () 
   assert.equal(ageOn(baby, { year: 2027, month: 8, day: 20 }), '2');
 });
 
-test('balanceText prints nothing at zero and two decimals otherwise', () => {
-  assert.equal(balanceText('$0.00'), '');
+test('balanceText prints 0 at zero, two decimals otherwise, nothing when unreadable', () => {
+  assert.equal(balanceText('$0.00'), '0');
+  assert.equal(balanceText('0'), '0');
   assert.equal(balanceText(null), '');
   assert.equal(balanceText('$12.5'), '12.50');
   assert.equal(balanceText('$1,234.50'), '1234.50');
@@ -88,7 +89,7 @@ test('formValues puts it together', () => {
     dob: '07/31/1980',
     age: '46',
     patientId: '117820477',
-    balanceDue: '',
+    balanceDue: '0',
     reasonForVisit: 'Long Medical',
   });
 });
