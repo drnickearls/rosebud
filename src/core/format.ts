@@ -12,6 +12,13 @@ export function firstLast(chartName: string): string {
   return [first, last].filter(Boolean).join(' ');
 }
 
+/** "Dumbledore, Albus" becomes "Dumbledore" (the provider is printed by last name only). */
+export function lastNameOnly(chartName: string): string {
+  const name = chartName.replace(/s+/g, ' ').trim();
+  const comma = name.indexOf(',');
+  return (comma < 0 ? name : name.slice(0, comma)).trim();
+}
+
 /** "07/31/1980" or "7/31/1980" to a date; null when it isn't one. */
 export function parseUsDate(text: string): CalendarDate | null {
   const m = /(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(text);
@@ -77,7 +84,7 @@ export interface PatientFacts {
 }
 
 export interface AppointmentFacts {
-  /** The provider as the schedule shows them ("Last, First"), or '' when unknown. */
+  /** The provider as the schedule shows them ("Last, First"), or '' when unknown; only the last name prints. */
   provider: string;
   date: CalendarDate;
   time: string; // "9:00 PM", or '' when it couldn't be found
@@ -88,7 +95,7 @@ export interface AppointmentFacts {
 /** One Routing Form's worth of values from what was read. */
 export function formValues(patient: PatientFacts, appointment: AppointmentFacts): FormValues {
   return {
-    provider: firstLast(appointment.provider),
+    provider: lastNameOnly(appointment.provider),
     date: formatUsDate(appointment.date),
     appointmentTime: appointment.time,
     name: firstLast(patient.chartName),

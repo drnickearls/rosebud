@@ -29,7 +29,7 @@ export const FIELD_LABELS: Record<keyof FormValues, string> = {
 
 /** Made-up values for a test print, longer than usual so a field that is too small shows up. */
 export const SAMPLE_VALUES: FormValues = {
-  provider: 'Albus Dumbledore',
+  provider: 'Dumbledore',
   date: '10/13/2026',
   appointmentTime: '10:40 AM',
   name: 'Harry Potter',

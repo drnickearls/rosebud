@@ -1,8 +1,15 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { cleanExamType, parseNextApptText, parseRfv } from '../src/core/appointment.js';
-import { ageOn, balanceText, firstLast, formValues, parseUsDate, reasonLine, timeToMinutes } from '../src/core/format.js';
+import { ageOn, balanceText, firstLast, lastNameOnly, formValues, parseUsDate, reasonLine, timeToMinutes } from '../src/core/format.js';
 import { groupByProvider, type ScheduleEntry } from '../src/core/schedule.js';
+
+test('lastNameOnly keeps the part before the comma', () => {
+  assert.equal(lastNameOnly('Dumbledore, Albus'), 'Dumbledore');
+  assert.equal(lastNameOnly('  Bollier-Smith ,  Dan '), 'Bollier-Smith');
+  assert.equal(lastNameOnly('Cher'), 'Cher');
+  assert.equal(lastNameOnly(''), '');
+});
 
 test('firstLast flips "Last, First"', () => {
   assert.equal(firstLast('Potter, Harry'), 'Harry Potter');
@@ -72,7 +79,7 @@ test('formValues puts it together', () => {
     { provider: 'Dumbledore, Albus', date: { year: 2026, month: 10, day: 13 }, time: '9:00 PM', examType: 'Long Medical', rfv: null },
   );
   assert.deepEqual(v, {
-    provider: 'Albus Dumbledore',
+    provider: 'Dumbledore',
     date: '10/13/2026',
     appointmentTime: '9:00 PM',
     name: 'Harry Potter',
