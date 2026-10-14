@@ -163,3 +163,13 @@
 ## Stable save point (2026-10-14)
 - Git tag **`stable-2026-10-14`** = commit `ebde1ac` = release v0.1.2: chart and schedule printing, provider/name/age/D.O.B. sizes, "0" balance, drag-and-drop form settings, front desk guide; live-tested on fake patients; 23 tests pass. To get back to it: `git checkout stable-2026-10-14` (or `git switch -c recover stable-2026-10-14`). The v0.1.2 release zip is the installable copy.
 - Architecture changes after this point should happen on a branch (e.g. `git switch -c architecture`), so main stays releasable.
+
+## Architecture change (2026-10-14, branch `architecture`, not merged)
+- Plan and reasons: docs/ARCHITECTURE-HANDOFF.md. Done: steps 1-4.
+- **Routing Forms module** `src/routingForms/` (`createRoutingForms({ ehr, form, now })` -> `offer(mode)` / `print(choice)`): reads RevolutionEHR only through the **`Ehr` port** (`src/routingForms/ehr.ts`); never touches the page, tabs or `fetch`. Inside: plan (visits, order, notes) then draw. Status filter (2/5/6) and "today's appointment = earliest at the primary location" live here.
+- Production adapter `src/ehr/revolution.ts` (services -> Rosebud terms: UTC to local once, names trimmed, birth date by its date part) + `src/ehr/screen.ts` (screen context only: chart id from the address, schedule date, provider columns, open appointment's patient id + time). `src/ehr/api.ts` = raw read-only calls. `app.ts` = chooser glue + PDF tab + messages.
+- **Chart Mode now reads the patient from the services** (`getPatientDashboardSummaryById` + `findLastAndNextEncounterByPatientId` + balances) instead of the chart screen; the chart page DOM readers are deleted.
+- Small behaviour changes: today's appointment found but its reason unreadable keeps the time (was blank); Stop also stops during PDF drawing; "Print only <name>" takes the name from the day list.
+- Tests: `test/fakeEhr.ts` (in-memory RevolutionEHR: fixtures, failures, abort, call log, in-flight count); `test/routingForms.test.ts` (15, at the module interface); `test/revolution.test.ts` (adapter mapping, TZ America/Indiana/Indianapolis). 41 tests pass; mutation check: removing the status filter or the earliest-first sort fails tests.
+- Live check (fake data, after reload): Chart Mode on Potter, Albus -> next appt 12/25/2026 9:00 AM, D.O.B. 01/05/2008, age 18, RFV from Comments: correct. Schedule Mode 9/27/2026: cover + 8 forms, Harry Potter = "Cataract Post Op Exam — 1 month post op": correct. "Print only" the open appointment: one form, no cover: correct. Not exercised live: the today/next chooser (no fake patient checked in today), Stop.
+- Next: user's go-ahead to merge to main and cut a release (version bump, zip, guide check).

@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { cleanExamType, parseNextApptText, parseRfv } from '../src/core/appointment.js';
+import { cleanExamType, parseRfv } from '../src/core/appointment.js';
 import { ageOn, balanceText, firstLast, lastNameOnly, formValues, parseUsDate, reasonLine, timeToMinutes } from '../src/core/format.js';
 import { groupByProvider, type ScheduleEntry } from '../src/core/schedule.js';
 
 test('lastNameOnly keeps the part before the comma', () => {
   assert.equal(lastNameOnly('Dumbledore, Albus'), 'Dumbledore');
   assert.equal(lastNameOnly('  Bollier-Smith ,  Dan '), 'Bollier-Smith');
-  assert.equal(lastNameOnly('Earls, Nick'), 'Earls'); // a last name ending in s stays whole
+  assert.equal(lastNameOnly('Jones, Hestia'), 'Jones'); // a last name ending in s stays whole
   assert.equal(lastNameOnly('Weiss,  Susan'), 'Weiss');
   assert.equal(lastNameOnly('Cher'), 'Cher');
   assert.equal(lastNameOnly(''), '');
@@ -48,10 +48,6 @@ test('dates and times', () => {
   assert.equal(timeToMinutes('12:30 PM'), 12 * 60 + 30);
   });
 
-test('Next Appt text', () => {
-  assert.deepEqual(parseNextApptText('Tuesday 10/13/2026 at 9:00 PM'), { date: { year: 2026, month: 10, day: 13 }, time: '9:00 PM' });
-  assert.equal(parseNextApptText('No appointments scheduled at this time.'), null);
-});
 
 test('exam type drops bracketed detail', () => {
   assert.equal(cleanExamType('Cataract Post Op Exam (1. Cataract Post Op)'), 'Cataract Post Op Exam');

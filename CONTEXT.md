@@ -28,7 +28,7 @@ Rosebud started from a patient's chart (patient summary page); prints one Routin
 Rosebud started from the schedule screen, for the date and providers on screen; prints the whole day, or only the selected patient.
 
 **Next Appt / Last Exam**:
-The two RevolutionEHR patient-summary entries Rosebud reads to find the appointment. A patient who has been checked in moves from Next Appt to Last Exam, and Last Exam shows a date only, never a time.
+The two RevolutionEHR patient-summary entries (Exam History panel) that decide which appointment a Chart Mode form is for; Rosebud reads the same facts from the service behind that panel. A patient who has been checked in moves from Next Appt to Last Exam, and Last Exam shows a date only, never a time.
 
 **Appointment Time**:
 The start time of the patient's earliest appointment on the Routing Form's date, taken from Next Appt when possible, otherwise from the schedule.

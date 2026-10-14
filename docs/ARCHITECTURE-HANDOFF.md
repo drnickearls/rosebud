@@ -1,5 +1,7 @@
 # Architecture change: handoff
 
+**Status (2026-10-14): steps 1-4 DONE** on `architecture` (live-checked on fake data; see TODO.md "Architecture change"). Waiting for the user's go-ahead to merge to main and release.
+
 Branch: `architecture` (from `main` at the stable tag `stable-2026-10-14` = release v0.1.2). `main` stays releasable; merge only when everything below is done and live-checked.
 
 ## Why
@@ -49,7 +51,7 @@ Vocabulary: module, interface, seam, adapter, depth, leverage, locality (see the
 ## Steps
 
 1. Port + adapters: `Ehr` interface, production adapter (new `patient()` from the two services above), `test/fakeEhr.ts`. Move the status filter and `startsOn` out of `api.ts` into the module.
-2. The module with tests at its interface (replace, don't layer): checked-in + next -> two sources; only checked-in; none; earliest today wins; second appointment same day; statuses 2/5/6 excluded; two providers + repeated patient -> cover page order and one earliest form each; balance/detail read failures -> blank + warning and still prints; missing DOB; abort -> nothing built; name with trailing space; DOB date part; "Earls" (last name ending in s).
+2. The module with tests at its interface (replace, don't layer): checked-in + next -> two sources; only checked-in; none; earliest today wins; second appointment same day; statuses 2/5/6 excluded; two providers + repeated patient -> cover page order and one earliest form each; balance/detail read failures -> blank + warning and still prints; missing DOB; abort -> nothing built; name with trailing space; DOB date part; a last name ending in s ("Jones").
 3. Rewire `main.tsx`/`app.ts`; delete `src/ehr/chart.ts`, the sidebar scraping, `waitFor`/`chartIsLoaded`/`sameName`; keep `core/*` helpers (merge duplicates of date/time helpers if trivial). `npm run build`, `npm test`, `tsc`.
 4. Live check on FAKE data only (see below), then update TODO.md/CONTEXT.md, commit on `architecture`, push. Do not merge to main or cut a release without the user's go-ahead.
 

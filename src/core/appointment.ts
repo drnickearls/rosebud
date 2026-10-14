@@ -1,14 +1,3 @@
-import type { CalendarDate } from './types.js';
-import { parseUsDate } from './format.js';
-
-/** "Tuesday 10/13/2026 at 9:00 PM" (the chart's Next Appt link) to its date and time. */
-export function parseNextApptText(text: string): { date: CalendarDate; time: string } | null {
-  const date = parseUsDate(text);
-  const m = /(\d{1,2}:\d{2})\s*([AP]M)/i.exec(text);
-  if (!date || !m) return null;
-  return { date, time: `${m[1]} ${m[2]!.toUpperCase()}` };
-}
-
 /** "Cataract Post Op Exam (1. Cataract Post Op)" to "Cataract Post Op Exam". */
 export function cleanExamType(text: string): string {
   let type = text.replace(/\s+/g, ' ').trim();

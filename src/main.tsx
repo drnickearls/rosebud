@@ -1,7 +1,9 @@
 import { printFromChart, printFromSchedule } from './app.js';
 import { watchScheduleLocation } from './ehr/api.js';
-import { chartPatientId } from './ehr/chart.js';
-import { onSchedulePage } from './ehr/schedule.js';
+import { revolutionEhr } from './ehr/revolution.js';
+import { chartPatientId, onSchedulePage } from './ehr/screen.js';
+import { currentForm } from './platform/formStore.js';
+import { createRoutingForms } from './routingForms/index.js';
 import { isBusy, showButton } from './ui/Panel.js';
 
 /**
@@ -12,6 +14,15 @@ import { isBusy, showButton } from './ui/Panel.js';
 
 watchScheduleLocation();
 
+const forms = createRoutingForms({
+  ehr: revolutionEhr,
+  form: currentForm,
+  now: () => {
+    const d = new Date();
+    return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() };
+  },
+});
+
 let shown = '';
 
 function sync(): void {
@@ -21,9 +32,9 @@ function sync(): void {
   shown = kind;
   showButton(
     kind === 'chart'
-      ? { label: 'Routing Form', run: (ui) => printFromChart(ui) }
+      ? { label: 'Routing Form', run: (ui) => printFromChart(ui, forms) }
       : kind === 'schedule'
-        ? { label: 'Routing Forms', run: (ui) => printFromSchedule(ui) }
+        ? { label: 'Routing Forms', run: (ui) => printFromSchedule(ui, forms) }
         : null,
   );
 }
