@@ -9,11 +9,13 @@
 - v1 Pre-filled Fields: Date, Appointment Time, Name, D.O.B., Age, ID #, Balance Due (will likely change).
 - Read-only (never writes to a chart); all data stays on the PC.
 
-## To do
-- [ ] **Form-reformat path (do not hard-code the form):** a way to change the Routing Form layout or Pre-filled Field set later — new blank PDF + field-position data — WITHOUT rewriting the program. Field positions live in data (a Form Template), not in code; consider an in-extension template editor page (load a blank PDF, place/move fields) after v1.
-- [ ] Export a blank PDF of the current form (need LibreOffice for headless conversion).
-- [ ] Possible later: prompt for the patient's Reason For Visit line before printing (not yet).
-- [ ] Schedule-screen mode (whole day / selected patient; skip rules for cancelled, no-show, blocked time; combined PDF in time order).
+## Open items (as of v0.1.3, 2026-10-14) — front desk trial under way; see HANDOFF.md
+- [ ] After the trial: ask whether to keep the patient list on the Provider Cover Page.
+- [ ] Not yet exercised live: the today-or-next chooser in the new code (needs a fake patient checked in today) and the Stop button (runs finish too fast to click).
+- [ ] Unverified: a status that is neither shown nor hidden today (e.g. a no-show not yet marked) — Rosebud hides only 2, 5, 6.
+- [ ] Unconfirmed: the "□" glyph on the four checkbox items of the form is what they should show.
+- [ ] Possible later: more Pre-filled Fields (each new kind of value needs a code change, then appears on the settings page).
+- Done since the first list: form changes without code (settings page), blank PDF export (LibreOffice), Schedule Mode. Dropped: the Reason For Visit prompt (replaced by RFV in Comments).
 
 ## Findings from RevolutionEHR (2026-10-13, test patient = the user's own chart)
 - Patient summary URL: `https://revolutionehr.com/static/#/patients/patient/<patientId>/patient-summary`; login via `https://revolutionehr.com/static/#/`.
@@ -32,7 +34,7 @@
 ## Appointment findings (2026-10-13, test appt on user's chart)
 - Exam History panel → "Next Appt" row: link text `Tuesday 10/13/2026 at 9:00 PM`, then visit type (`Long Medical`), provider (`Provider A`), location (`the practice location`).
 - Patient summary loads ~20 JSON services (`/pms2/ws/patient/...`), including `getPatientDashboardSummaryById`, `findLastAndNextEncounterByPatientId`, `getAccountBalancesAndCreditsByPatientId`. A direct call from the page with no extra headers returns **403** (needs the app's own request headers/token) — not pursued; read the page text, as the Coding Companion does.
-- A full page reload (F5) on the chart goes through "Validating credentials" and returns to the chart; the session survives.
+- A full page reload (F5) on the chart goes through "Validating credentials" and returns to the chart; the session survives. (Not so on 2026-10-14: a reload and closing the tab both went to the login page. Expect to sign in again.)
 - Unverified: whether "Next Appt" skips an appointment earlier today whose time has already passed (matters if the form is printed after check-in).
 
 ## Settled 2026-10-13 (round 4)
@@ -109,7 +111,7 @@
 - Schedule Mode: one form per patient per provider (earliest time with that provider); cover-page count = forms, not slots.
 
 ## Build status (2026-10-13, night)
-- Built and committed: repo `github.com/drnickearls/rosebud` (private). Core logic + tests (13 passing), readers (chart header/Account/Exam History, Appointment panel, schedule date/provider columns/Agenda), background-tab jobs (nextAppt, todayAppt, chartFacts, chartBalances), Chart Mode, Schedule Mode (provider chooser, cover pages, one form per patient per provider), floating button, PDF in a new tab.
+- Built and committed: repo `github.com/drnickearls/rosebud` (private then; PUBLIC since — no patient data in it). Core logic + tests (13 passing), readers (chart header/Account/Exam History, Appointment panel, schedule date/provider columns/Agenda), background-tab jobs (nextAppt, todayAppt, chartFacts, chartBalances), Chart Mode, Schedule Mode (provider chooser, cover pages, one form per patient per provider), floating button, PDF in a new tab.
 - Readers were checked live against the user's Chrome tab (test patient chart, schedule, appointment panel). **Not yet tested live inside the loaded extension:** the background-tab jobs, the button, the PDF opening, Schedule Mode. First step next: user loads `dist/extension` unpacked (Chrome: chrome://extensions → Developer mode → Load unpacked; Edge: edge://extensions).
 - Risk to watch: background tabs are throttled (the Coding Companion measured 1-second timers and Syncfusion hangs in hidden tabs, ADR 0005). If the jobs are too slow or hang, open the job tab in a small separate window instead.
 - Known gap: Last Exam same-day detection assumes the Last Exam date equals the local PC date.

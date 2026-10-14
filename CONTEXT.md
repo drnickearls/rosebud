@@ -9,7 +9,7 @@ The one-page paper form the practice prints per patient visit and fills in by ha
 _Avoid_: print form
 
 **Pre-filled Field**:
-A Routing Form field Rosebud prints for the user, as opposed to one left blank for handwriting. v1: Date, Appointment Time, Name, D.O.B., Age, ID #, Balance Due. The set is expected to change later.
+A Routing Form field Rosebud prints for the user, as opposed to one left blank for handwriting. Now (v0.1.3): Provider, Date, Appointment Time, Name, D.O.B., Age, ID #, Balance Due, Reason For Visit. The set is expected to change later.
 _Avoid_: autofill (RevolutionEHR-side meaning), merge field
 
 **Form Template**:
@@ -24,7 +24,7 @@ The dollar amount the patient owes, printed on the Routing Form's "Balance due" 
 **Chart Mode**:
 Rosebud started from a patient's chart (patient summary page); prints one Routing Form for that patient.
 
-**Schedule Mode** (later):
+**Schedule Mode**:
 Rosebud started from the schedule screen, for the date and providers on screen; prints the whole day, or only the selected patient.
 
 **Next Appt / Last Exam**:
@@ -40,4 +40,4 @@ The short reason for the appointment, typed by staff into the appointment's Comm
 A summary page in a multi-provider print that names one provider and how many exams they have, placed before that provider's Routing Forms so where one provider's stack ends and the next begins is obvious. Not a Routing Form.
 
 **Form Settings**:
-The dialog (opened with the Form… button) where staff replace the Routing Form artwork and field positions, test print it with a made-up patient, and save it on that computer. The result is still a Form Template; "reformatting the form" means using this, not changing Rosebud's code.
+The extension's settings page (opened from the toolbar button or the extension's "Extension options") where the office manager replaces the Routing Form artwork, drags the fields into place, test prints with a made-up patient, and saves it on that computer. The result is still a Form Template; "reformatting the form" means using this, not changing Rosebud's code.

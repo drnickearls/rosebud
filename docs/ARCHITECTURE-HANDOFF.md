@@ -2,7 +2,7 @@
 
 **Status (2026-10-14): steps 1-4 and the saved-form and form-editor candidates DONE** on `architecture` (live-checked on fake data; see TODO.md "Architecture change"). Merged to main and released as v0.1.3.
 
-Branch: `architecture` (from `main` at the stable tag `stable-2026-10-14` = release v0.1.2). `main` stays releasable; merge only when everything below is done and live-checked.
+This file is now the record of why the code is shaped as it is; it is no longer a to-do. The `architecture` branch was merged into `main` and deleted. Current state and next steps: [HANDOFF.md](../HANDOFF.md).
 
 ## Why
 
