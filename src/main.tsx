@@ -2,8 +2,9 @@ import { printFromChart, printFromSchedule } from './app.js';
 import { watchScheduleLocation } from './ehr/api.js';
 import { revolutionEhr } from './ehr/revolution.js';
 import { chartPatientId, onSchedulePage } from './ehr/screen.js';
-import { currentForm } from './platform/formStore.js';
 import { createRoutingForms } from './routingForms/index.js';
+import { createSavedForm } from './savedForm/index.js';
+import { pageFormStorage } from './savedForm/pageBridge.js';
 import { isBusy, showButton } from './ui/Panel.js';
 
 /**
@@ -16,7 +17,7 @@ watchScheduleLocation();
 
 const forms = createRoutingForms({
   ehr: revolutionEhr,
-  form: currentForm,
+  form: createSavedForm(pageFormStorage()).load,
   now: () => {
     const d = new Date();
     return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() };

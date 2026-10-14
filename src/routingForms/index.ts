@@ -67,8 +67,8 @@ export interface RoutingForms {
 
 export interface RoutingFormsDeps {
   ehr: Ehr;
-  /** The form in use: the saved custom form, or the built-in one. */
-  form: () => Promise<{ assets: FormAssets }>;
+  /** The form in use: the saved custom form, or the built-in one (with `problem` saying why a saved one could not be used). */
+  form: () => Promise<{ assets: FormAssets; problem?: string | null }>;
   /** Today on the PC's clock. */
   now: () => CalendarDate;
 }
@@ -296,12 +296,12 @@ export function createRoutingForms({ ehr, form, now }: RoutingFormsDeps): Routin
       options.signal.throwIfAborted();
       const parts = partsOf(plan);
       const count = parts.filter((p) => p.kind === 'form').length;
-      const { assets } = await form();
+      const { assets, problem } = await form();
       const pdf = await buildPdf(parts, assets, async (done, total) => {
         options.signal.throwIfAborted();
         await options.progress?.(`Routing Forms completed: ${done} of ${total}`);
       });
-      return { pdf, parts, count, warnings: plan.notes };
+      return { pdf, parts, count, warnings: problem ? [...plan.notes, problem] : plan.notes };
     },
   };
 }

@@ -38,14 +38,14 @@ const appt = (patientId: string, chartName: string, provider: string, time: stri
   ...over,
 });
 
-function setup(data: FakeData) {
+function setup(data: FakeData, problem: string | null = null) {
   const ehr = new FakeEhr(data);
   let formLoads = 0;
   const forms = createRoutingForms({
     ehr,
     form: async () => {
       formLoads++;
-      return { assets: bundledAssets };
+      return { assets: bundledAssets, problem };
     },
     now: () => TODAY,
   });
@@ -166,14 +166,14 @@ test("chart: the next appointment's detail unreadable falls back to its exam typ
 
 // --- Schedule Mode ----------------------------------------------------------------------
 
-function scheduleDay(day: Appointment[], over: Partial<FakeData> = {}) {
+function scheduleDay(day: Appointment[], over: Partial<FakeData> = {}, problem: string | null = null) {
   const balances: Record<string, number> = {};
   const details: FakeData['details'] = {};
   for (const a of day) {
     balances[a.patientId] = 0;
     details[a.id] = { examType: null, comments: '' };
   }
-  const s = setup({ days: { [dayKey(TODAY, LOCATION)]: day }, balances, details, ...over });
+  const s = setup({ days: { [dayKey(TODAY, LOCATION)]: day }, balances, details, ...over }, problem);
   s.ehr.onScreen.schedule = { date: TODAY, providers: ['Jones, Hestia', 'Dumbledore, Albus', 'Snape, Severus'], locationId: LOCATION };
   return s;
 }
@@ -286,4 +286,11 @@ test('Stop during Chart Mode is not turned into a warning', async () => {
   };
   await assert.rejects(print({ mode: 'chart', source: 'next' }), isAbortError);
   assert.equal(formLoads(), 0);
+});
+
+test("a saved form that couldn't be used is reported with the print's warnings", async () => {
+  const s = scheduleDay([appt('1', 'Potter, Harry', 'Jones, Hestia', '8:00 AM')], {}, 'The form saved on this computer could not be read, so the built-in form was used.');
+  const printed = await s.print({ mode: 'schedule', providers: ['Jones, Hestia'] });
+  assert.equal(printed.count, 1);
+  assert.deepEqual(printed.warnings, ['The form saved on this computer could not be read, so the built-in form was used.']);
 });

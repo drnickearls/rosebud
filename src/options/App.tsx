@@ -1,67 +1,39 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 import { bundledAssets } from '../core/assets.js';
-import { FIELD_KEYS, FIELD_LABELS, SAMPLE_VALUES, inspectBlankPdf, parsePackage, stringifyPackage, validateTemplate } from '../core/form.js';
-import { buildPdf, type FormAssets, type TemplateField } from '../core/pdf.js';
-import type { FormValues } from '../core/types.js';
-import { clearSavedForm, saveFormText, savedFormText } from './store.js';
+import { FIELD_KEYS, FIELD_LABELS, SAMPLE_VALUES, inspectBlankPdf, parsePackage, stringifyPackage } from '../core/form.js';
+import { buildPdf } from '../core/pdf.js';
+import {
+  addField,
+  applySuggestions,
+  assetsOf,
+  boxOf,
+  dragTo,
+  dragWidth,
+  draftOf,
+  isArrow,
+  nudge,
+  removeField,
+  resize,
+  toggleBold,
+  unplaced as unplacedOf,
+  type Arrow,
+  type Draft,
+  type Key,
+  type PageSize,
+  type Placed,
+} from '../formEditor/index.js';
+import { chromeFormStorage } from '../savedForm/chromeStorage.js';
+import { createSavedForm } from '../savedForm/index.js';
 import { openFormPage, type FormPage } from './pdfView.js';
 
-type Key = keyof FormValues;
-interface Placed {
-  x: number;
-  y: number;
-  size: number;
-  maxWidth?: number;
-  bold?: boolean;
-}
-interface Draft {
-  name: string;
-  blankPdf: Uint8Array;
-  fields: Partial<Record<Key, Placed>>;
-}
 type Message = { kind: 'ok' | 'error'; text: string } | null;
 
 /** Screen pixels per PDF point. */
 const SCALE = 1.3;
-const SNAP = 0.5;
-const snap = (n: number) => Math.round(n / SNAP) * SNAP;
-const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
+const LETTER: PageSize = { width: 612, height: 792 };
 
-const ctx = document.createElement('canvas').getContext('2d')!;
-const textWidth = (text: string, size: number, bold = false) => {
-  ctx.font = `${bold ? "bold " : ""}${size}px Helvetica, Arial, sans-serif`;
-  return ctx.measureText(text).width;
-};
-/** The same shrink-to-fit rule the PDF uses (src/core/pdf.ts), so the preview matches the print. */
-function fitSize(text: string, size: number, maxWidth?: number, bold = false): number {
-  let s = size;
-  if (maxWidth) while (s > 6 && textWidth(text, s, bold) > maxWidth) s -= 0.5;
-  return s;
-}
-
-function draftOf(assets: FormAssets): Draft {
-  const fields: Draft['fields'] = {};
-  for (const f of assets.template.fields) {
-    const placed: Placed = { x: f.x, y: f.y, size: f.size ?? 10 };
-    if (f.maxWidth !== undefined) placed.maxWidth = f.maxWidth;
-    if (f.bold) placed.bold = true;
-    fields[f.key] = placed;
-  }
-  return { name: assets.template.name, blankPdf: assets.blankPdf, fields };
-}
-
-function assetsOf(draft: Draft): FormAssets {
-  const fields: TemplateField[] = FIELD_KEYS.flatMap((key) => {
-    const p = draft.fields[key];
-    if (!p) return [];
-    const f: TemplateField = { key, x: p.x, y: p.y, size: p.size };
-    if (p.maxWidth !== undefined) f.maxWidth = p.maxWidth;
-    if (p.bold) f.bold = true;
-    return [f];
-  });
-  return { blankPdf: draft.blankPdf, template: validateTemplate({ name: draft.name, fields }) };
-}
+const savedForm = createSavedForm(chromeFormStorage);
 
 function download(filename: string, text: string): void {
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
@@ -84,19 +56,11 @@ export function App() {
 
   // The form in use when the page opens.
   useEffect(() => {
-    void (async () => {
-      let assets: FormAssets = bundledAssets;
-      try {
-        const text = await savedFormText();
-        if (text) {
-          assets = await parsePackage(text);
-          setCustom(true);
-        }
-      } catch {
-        setMessage({ kind: 'error', text: 'The saved form could not be read, so the built-in form is shown.' });
-      }
-      setDraft(draftOf(assets));
-    })();
+    void savedForm.load().then((loaded) => {
+      setCustom(loaded.custom);
+      if (loaded.problem) setMessage({ kind: 'error', text: loaded.problem.replace(' was used', ' is shown') });
+      setDraft(draftOf(loaded.assets));
+    });
   }, []);
 
   // Draw the blank form whenever its PDF changes.
@@ -133,22 +97,12 @@ export function App() {
 
   if (!draft) return <p class="loading">Loading&hellip;</p>;
 
+  const size: PageSize = page ?? LETTER;
   const edit = (next: Draft) => {
     setDraft(next);
     setDirty(true);
     setMessage(null);
     setConfirmReset(false);
-  };
-  const setField = (key: Key, patch: Partial<Placed> | null) => {
-    const fields = { ...draft.fields };
-    if (patch === null) delete fields[key];
-    else {
-      const current = fields[key] ?? { x: 100, y: 400, size: 10 };
-      const merged: Placed = { ...current, ...patch };
-      if (patch.maxWidth === undefined && 'maxWidth' in patch) delete merged.maxWidth;
-      fields[key] = merged;
-    }
-    edit({ ...draft, fields });
   };
   const attempt = async (work: () => Promise<void> | void) => {
     try {
@@ -178,13 +132,9 @@ export function App() {
   const suggest = () =>
     attempt(async () => {
       if (!page) return;
-      const found = await page.suggest();
-      const keys = Object.keys(found) as Key[];
-      if (keys.length === 0) throw new Error("Couldn't find the form's labels (Date, Name, D.O.B. ...). Drag the boxes into place by hand.");
-      const fields = { ...draft.fields };
-      for (const key of keys) fields[key] = { size: 10, ...fields[key], x: found[key]!.x, y: found[key]!.y };
-      edit({ ...draft, fields });
-      setMessage({ kind: 'ok', text: `Placed ${keys.length} boxes by their labels. Drag any that are off, then Test print.` });
+      const result = applySuggestions(draft, await page.suggest());
+      edit(result.draft);
+      setMessage({ kind: 'ok', text: `Placed ${result.placed} boxes by their labels. Drag any that are off, then Test print.` });
     });
 
   const testPrint = () =>
@@ -196,7 +146,7 @@ export function App() {
 
   const save = () =>
     attempt(async () => {
-      await saveFormText(stringifyPackage(assetsOf(draft)));
+      await savedForm.save(assetsOf(draft));
       setCustom(true);
       setDirty(false);
       setMessage({ kind: 'ok', text: 'Saved. New Routing Forms use this form from now on.' });
@@ -214,7 +164,7 @@ export function App() {
         setConfirmReset(true);
         return;
       }
-      await clearSavedForm();
+      await savedForm.reset();
       setDraft(draftOf(bundledAssets));
       setCustom(false);
       setDirty(false);
@@ -223,7 +173,7 @@ export function App() {
       setMessage({ kind: 'ok', text: 'Back to the form built into Rosebud.' });
     });
 
-  const unplaced = FIELD_KEYS.filter((k) => !draft.fields[k]);
+  const unplaced = unplacedOf(draft);
   const sel = selected ? draft.fields[selected] : undefined;
 
   return (
@@ -268,7 +218,7 @@ export function App() {
 
       <div class="work">
         <div class="stage" onPointerDown={(e) => e.target === e.currentTarget && setSelected(null)}>
-          <div class="sheet" style={{ width: page ? page.width * SCALE : 612 * SCALE, height: page ? page.height * SCALE : 792 * SCALE }}>
+          <div class="sheet" style={{ width: size.width * SCALE, height: size.height * SCALE }}>
             <canvas ref={canvas} />
             {page &&
               FIELD_KEYS.map((key) => {
@@ -278,11 +228,12 @@ export function App() {
                     key={key}
                     name={key}
                     field={f}
+                    page={page}
                     selected={selected === key}
-                    pageHeight={page.height}
-                    pageWidth={page.width}
                     onSelect={() => setSelected(key)}
-                    onChange={(patch) => setField(key, patch)}
+                    onDrag={(from, dx, dy) => edit(dragTo(draft, key, from, dx, dy, page, SCALE))}
+                    onWiden={(fromWidth, dx) => edit(dragWidth(draft, key, fromWidth, dx, SCALE))}
+                    onArrow={(arrow, big) => edit(nudge(draft, key, arrow, big, page))}
                   />
                 ) : null;
               })}
@@ -297,16 +248,16 @@ export function App() {
               <strong>{FIELD_LABELS[selected]}</strong>
               <div class="line">
                 <span>Text size</span>
-                <button class="btn small" onClick={() => setField(selected, { size: Math.max(6, sel.size - 0.5) })}>
+                <button class="btn small" onClick={() => edit(resize(draft, selected, -0.5))}>
                   A&minus;
                 </button>
                 <span class="num">{sel.size}</span>
-                <button class="btn small" onClick={() => setField(selected, { size: Math.min(24, sel.size + 0.5) })}>
+                <button class="btn small" onClick={() => edit(resize(draft, selected, 0.5))}>
                   A+
                 </button>
               </div>
               <label class="line">
-                <input type="checkbox" checked={!!sel.bold} onChange={() => setField(selected, { bold: !sel.bold })} />
+                <input type="checkbox" checked={!!sel.bold} onChange={() => edit(toggleBold(draft, selected))} />
                 <span>Bold</span>
               </label>
               <div class="line">
@@ -315,7 +266,7 @@ export function App() {
               <button
                 class="btn small"
                 onClick={() => {
-                  setField(selected, null);
+                  edit(removeField(draft, selected));
                   setSelected(null);
                 }}
               >
@@ -334,7 +285,7 @@ export function App() {
                   <button
                     class="chip"
                     onClick={() => {
-                      setField(key, { x: snap((page?.width ?? 612) * 0.3), y: snap((page?.height ?? 792) * 0.5), size: 10 });
+                      edit(addField(draft, key, size));
                       setSelected(key);
                     }}
                   >
@@ -362,54 +313,47 @@ function FileButton({ accept, onPick, children }: { accept: string; onPick: (inp
 interface BoxProps {
   name: Key;
   field: Placed;
+  page: PageSize;
   selected: boolean;
-  pageHeight: number;
-  pageWidth: number;
   onSelect: () => void;
-  onChange: (patch: Partial<Placed>) => void;
+  /** A drag that started with the field at `from`, now (dx, dy) screen pixels away. */
+  onDrag: (from: { x: number; y: number }, dx: number, dy: number) => void;
+  /** A drag of the right-edge grip that started at `fromWidth` points, now dx screen pixels away. */
+  onWiden: (fromWidth: number, dx: number) => void;
+  onArrow: (arrow: Arrow, big: boolean) => void;
 }
 
 /** A field drawn over the form with its sample text; dragged to move, its right edge dragged to set the width. */
-function FieldBox({ name, field, selected, pageHeight, pageWidth, onSelect, onChange }: BoxProps) {
-  const text = SAMPLE_VALUES[name];
+function FieldBox({ name, field, page, selected, onSelect, onDrag, onWiden, onArrow }: BoxProps) {
+  const box = boxOf(name, field, page, SCALE);
   const drag = useRef<{ mode: 'move' | 'resize'; px: number; py: number; x: number; y: number; width: number } | null>(null);
-  const size = fitSize(text, field.size, field.maxWidth, field.bold);
-  const naturalWidth = textWidth(text, size, field.bold);
-  const width = field.maxWidth ?? naturalWidth;
-  const left = field.x * SCALE;
-  const top = (pageHeight - field.y) * SCALE - 0.85 * size * SCALE;
 
   const start = (mode: 'move' | 'resize') => (e: PointerEvent) => {
     e.stopPropagation();
     onSelect();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    drag.current = { mode, px: e.clientX, py: e.clientY, x: field.x, y: field.y, width };
+    drag.current = { mode, px: e.clientX, py: e.clientY, x: field.x, y: field.y, width: box.widthPt };
     e.preventDefault();
   };
   const move = (e: PointerEvent) => {
     const d = drag.current;
     if (!d) return;
-    const dx = (e.clientX - d.px) / SCALE;
-    const dy = (e.clientY - d.py) / SCALE;
-    if (d.mode === 'move') onChange({ x: clamp(snap(d.x + dx), 0, pageWidth - 5), y: clamp(snap(d.y - dy), 0, pageHeight - 5) });
-    else onChange({ maxWidth: Math.max(8, snap(d.width + dx)) });
+    if (d.mode === 'move') onDrag({ x: d.x, y: d.y }, e.clientX - d.px, e.clientY - d.py);
+    else onWiden(d.width, e.clientX - d.px);
   };
   const end = () => {
     drag.current = null;
   };
   const key = (e: KeyboardEvent) => {
-    const step = e.shiftKey ? 5 : SNAP;
-    const delta: Record<string, [number, number]> = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] };
-    const d = delta[e.key];
-    if (!d) return;
+    if (!isArrow(e.key)) return;
     e.preventDefault();
-    onChange({ x: clamp(field.x + d[0], 0, pageWidth - 5), y: clamp(field.y + d[1], 0, pageHeight - 5) });
+    onArrow(e.key, e.shiftKey);
   };
 
   return (
     <div
       class={`box${selected ? ' selected' : ''}`}
-      style={{ left, top, width: width * SCALE, height: size * 1.2 * SCALE }}
+      style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
       tabIndex={0}
       onPointerDown={start('move')}
       onPointerMove={move}
@@ -419,8 +363,8 @@ function FieldBox({ name, field, selected, pageHeight, pageWidth, onSelect, onCh
       title={FIELD_LABELS[name]}
     >
       <span class="tag">{FIELD_LABELS[name]}</span>
-      <span class="sample" style={{ fontSize: size * SCALE, lineHeight: 1, fontWeight: field.bold ? 700 : 400 }}>
-        {text}
+      <span class="sample" style={{ fontSize: box.fontSize, lineHeight: 1, fontWeight: field.bold ? 700 : 400 }}>
+        {box.text}
       </span>
       <span class="grip" onPointerDown={start('resize')} onPointerMove={move} onPointerUp={end} title="Drag to set the maximum width" />
     </div>

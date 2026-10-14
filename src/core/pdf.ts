@@ -39,9 +39,13 @@ function drawable(text: string, font: PDFFont): string {
   return out;
 }
 
-function fit(text: string, font: PDFFont, size: number, maxWidth?: number): number {
+/**
+ * The text size a field prints at: its size, shrunk in half-points (to a floor of 6pt) until
+ * the text fits its maximum width. The settings page previews with the same rule and metrics.
+ */
+export function fitSize(text: string, size: number, maxWidth: number | undefined, widthAt: (text: string, size: number) => number): number {
   let s = size;
-  if (maxWidth) while (s > 6 && font.widthOfTextAtSize(text, s) > maxWidth) s -= 0.5;
+  if (maxWidth) while (s > 6 && widthAt(text, s) > maxWidth) s -= 0.5;
   return s;
 }
 
@@ -51,7 +55,7 @@ function drawForm(page: PDFPage, fonts: { regular: PDFFont; bold: PDFFont }, tem
     if (!raw) continue;
     const font = f.bold ? fonts.bold : fonts.regular;
     const text = drawable(raw, font);
-    page.drawText(text, { x: f.x, y: f.y, size: fit(text, font, f.size ?? 10, f.maxWidth), font, color: rgb(0, 0, 0) });
+    page.drawText(text, { x: f.x, y: f.y, size: fitSize(text, f.size ?? 10, f.maxWidth, (t, s) => font.widthOfTextAtSize(t, s)), font, color: rgb(0, 0, 0) });
   }
 }
 
