@@ -7,9 +7,8 @@
  * sends them; src/ehr/revolution.ts turns them into Rosebud's terms.
  */
 
+import { pad } from '../core/format.js';
 import type { CalendarDate } from '../core/types.js';
-
-const pad = (n: number) => String(n).padStart(2, '0');
 
 function antiForgeryToken(): string {
   const cookie = document.cookie.split(';').map((c) => c.trim()).find((c) => /^XSRF-TOKEN=/i.test(c));

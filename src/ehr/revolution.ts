@@ -4,6 +4,7 @@
  * UTC times onto the PC's clock, names trimmed, birth dates by their date part.
  */
 
+import { pad } from '../core/format.js';
 import type { CalendarDate } from '../core/types.js';
 import type { Appointment, AppointmentDetail, Ehr, Patient } from '../routingForms/ehr.js';
 import {
@@ -20,8 +21,6 @@ import {
   type PersonName,
 } from './api.js';
 import { chartPatientId, onSchedulePage, openAppointment, providerColumns, scheduleDate } from './screen.js';
-
-const pad = (n: number) => String(n).padStart(2, '0');
 
 /** "2026-10-13T12:50:00Z" to the PC's local clock: its date and "8:50 AM". */
 export function localWhen(iso: string): { date: CalendarDate; time: string } {

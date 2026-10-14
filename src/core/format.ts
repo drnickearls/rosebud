@@ -1,6 +1,7 @@
 import type { CalendarDate, FormValues } from './types.js';
 
-const pad = (n: number) => String(n).padStart(2, '0');
+/** "7" to "07". */
+export const pad = (n: number) => String(n).padStart(2, '0');
 
 /** "Potter, Harry" becomes "Harry Potter" (the Routing Form reads first name first). */
 export function firstLast(chartName: string): string {
