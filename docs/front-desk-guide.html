@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rosebud Front Desk Guide</title>
+<style>
+  @page { size: 8.5in 11in; margin: 0.7in; }
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.35; color: #1f2937; }
+  h1 { font-size: 22pt; margin: 0 0 2pt; color: #be1848; }
+  .sub { color: #6b7280; margin: 0 0 12pt; }
+  h2 { font-size: 14pt; margin: 14pt 0 4pt; color: #be1848; border-bottom: 1px solid #e5e7eb; padding-bottom: 2pt; }
+  h3 { font-size: 11.5pt; margin: 9pt 0 2pt; }
+  p { margin: 3pt 0; }
+  ol, ul { margin: 3pt 0 3pt 18pt; padding: 0; }
+  li { margin: 2pt 0; }
+  .btn { background: #be1848; color: #ffffff; font-weight: bold; padding: 0 6pt; }
+  .tip { background: #f3f4f6; padding: 4pt 8pt; margin: 6pt 0; }
+  table { border-collapse: collapse; width: 100%; margin: 4pt 0; }
+  td, th { border: 1px solid #d1d5db; padding: 3pt 6pt; vertical-align: top; text-align: left; }
+  th { background: #f3f4f6; }
+</style>
+</head>
+<body>
+
+<h1>Rosebud</h1>
+<p class="sub">Front desk guide: printing pre-filled Routing Forms from RevolutionEHR</p>
+
+<h2>Setting it up on a computer (once)</h2>
+<ol>
+  <li>Download <b>rosebud-extension-0.1.0.zip</b> from <b>github.com/drnickearls/rosebud/releases/latest</b> (under <i>Assets</i>). Unzip it to a folder that will stay put, for example <b>C:\Rosebud</b>. Don't delete or move it afterwards.</li>
+  <li>In the browser, open the extensions page: type <b>edge://extensions</b> (Edge) or <b>chrome://extensions</b> (Chrome) in the address bar.</li>
+  <li>Turn on <b>Developer mode</b>.</li>
+  <li>Click <b>Load unpacked</b> and choose the unzipped folder.</li>
+  <li>Reload your RevolutionEHR tab. The rose-colored button appears at the bottom left of the Patient Summary and the Schedule.</li>
+</ol>
+<p>To change the form layout later, open the extension's <b>Details &rarr; Extension options</b> (office manager only).</p>
+
+<h2>What it does</h2>
+<p>Rosebud fills in the top of the Routing Form for you &mdash; the date, appointment time, patient name, D.O.B., age, ID #, balance due and the reason for visit &mdash; and opens it as a PDF to print. Everything else on the form is left blank for handwriting.</p>
+<p>It only <b>reads</b> from RevolutionEHR. It never changes a chart, an appointment or the schedule, and it does not store or send any patient information.</p>
+
+<h2>Print one patient's form (from their chart)</h2>
+<ol>
+  <li>Open the patient's chart (Patient Summary page).</li>
+  <li>Click the <span class="btn">Routing Form</span> button in the bottom-left corner of the screen.</li>
+  <li>The form opens in a new browser tab. Press <b>Ctrl + P</b> to print it.</li>
+</ol>
+<p><b>If the patient has already been checked in today</b> and also has a later appointment, Rosebud asks which one the form is for: <i>Today's appointment</i> or <i>The next appointment</i>. Click the one you want.</p>
+<p>The form is made for the patient's <b>earliest appointment</b> on that day. A patient with no appointment gets a message instead of a form.</p>
+
+<h2>Print a whole day's forms (from the schedule)</h2>
+<ol>
+  <li>Open the <b>Schedule</b> and go to the day you want (you can print a few days ahead).</li>
+  <li>Make sure the <b>providers</b> you want are showing on the screen.</li>
+  <li>Click the <span class="btn">Routing Forms</span> button in the bottom-left corner.<br>
+      <i>If it says "Click the schedule's refresh button once", click the refresh icon at the top right of the schedule, then click Routing Forms again.</i></li>
+  <li>Tick the providers you want and click <b>Print the selected providers</b>.</li>
+  <li>Watch the box above the button: it shows <i>"Routing Forms completed: 5 of 12"</i>. When it finishes, the forms open in a new tab. Press <b>Ctrl + P</b> to print.</li>
+</ol>
+<p>The printout is grouped by provider. Each provider starts with a <b>cover page</b> (provider name, number of exams, and the list of patients with times). After the cover page come that provider's forms in appointment-time order. Then the next provider's cover page and forms.</p>
+<p><b>Just one patient from the schedule:</b> click that patient's appointment so it opens in the panel on the right, click <span class="btn">Routing Forms</span>, then choose <b>Print only</b> (patient's name).</p>
+<p>The <b>Stop</b> button in the box cancels a run that is in progress; nothing is printed.</p>
+
+<h2>Reason for visit (RFV)</h2>
+<p>To have the reason for the visit printed on the form, type <b>RFV</b> and the reason in the appointment's <b>Comments</b> box, and press <b>Enter</b> before any other notes:</p>
+<div class="tip">RFV: 1 month post op<br>original surgery 8-11-26<br>co-management forms scanned in</div>
+<p>The form then shows the appointment type and the reason: <b>Cataract Post Op Exam &mdash; 1 month post op</b>. Only the text after RFV, up to the end of that line, is used. Other notes are never printed. RFV is best on the first line but is found anywhere in the Comments. With no RFV, the form shows just the appointment type.</p>
+
+</body>
+</html>

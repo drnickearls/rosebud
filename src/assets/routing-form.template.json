@@ -1,0 +1,61 @@
+{
+  "name": "Routing Form 2026-10-13",
+  "blankPdf": "blank-routing-form.pdf",
+  "font": "Helvetica",
+  "fields": [
+    {
+      "key": "date",
+      "x": 208.6,
+      "y": 762,
+      "size": 10
+    },
+    {
+      "key": "appointmentTime",
+      "x": 471.4,
+      "y": 762,
+      "size": 10
+    },
+    {
+      "key": "name",
+      "x": 59.6,
+      "y": 734,
+      "size": 10,
+      "maxWidth": 165
+    },
+    {
+      "key": "dob",
+      "x": 273,
+      "y": 734,
+      "size": 10,
+      "maxWidth": 62
+    },
+    {
+      "key": "age",
+      "x": 371.5,
+      "y": 734,
+      "size": 10,
+      "maxWidth": 44
+    },
+    {
+      "key": "patientId",
+      "x": 456.6,
+      "y": 734,
+      "size": 10,
+      "maxWidth": 58
+    },
+    {
+      "key": "balanceDue",
+      "x": 492,
+      "y": 677,
+      "size": 10,
+      "maxWidth": 44
+    },
+    {
+      "key": "reasonForVisit",
+      "x": 140,
+      "y": 607,
+      "size": 10,
+      "maxWidth": 325
+    }
+  ]
+}
