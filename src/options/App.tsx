@@ -333,7 +333,8 @@ function FieldBox({ name, field, page, selected, onSelect, onDrag, onWiden, onAr
     onSelect();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     drag.current = { mode, px: e.clientX, py: e.clientY, x: field.x, y: field.y, width: box.widthPt };
-    e.preventDefault();
+    e.preventDefault(); // no text selection while dragging; this also skips the browser's focusing, so:
+    (e.currentTarget as HTMLElement).closest<HTMLElement>('.box')?.focus({ preventScroll: true }); // the arrow keys reach this box
   };
   const move = (e: PointerEvent) => {
     const d = drag.current;
