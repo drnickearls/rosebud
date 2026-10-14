@@ -16,7 +16,9 @@ export interface FormPage {
 }
 
 export async function openFormPage(bytes: Uint8Array): Promise<FormPage> {
-  const loading = pdfjs.getDocument({ data: bytes.slice() });
+  // Errors only: pdf.js warns about harmless font quirks (e.g. "TT: undefined function"),
+  // which Edge lists under the extension's Errors button.
+  const loading = pdfjs.getDocument({ data: bytes.slice(), verbosity: pdfjs.VerbosityLevel.ERRORS });
   const doc = await loading.promise;
   const page = await doc.getPage(1);
   const base = page.getViewport({ scale: 1 });
