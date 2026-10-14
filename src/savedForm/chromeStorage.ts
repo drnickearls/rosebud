@@ -8,6 +8,8 @@ const KEY = 'rosebud.form.v1';
 /** The saved form in chrome.storage.local: used by the settings page and the bridge script. */
 export const chromeFormStorage: FormStorage = {
   async read() {
+    // After the extension is reloaded, a tab's old bridge script loses chrome.storage.
+    if (!chromeApi?.storage?.local) throw new Error('Rosebud was reloaded after this page opened; reload RevolutionEHR (and sign in again) to use it');
     const value = (await chromeApi.storage.local.get(KEY))[KEY];
     return typeof value === 'string' ? value : null;
   },

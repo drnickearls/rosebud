@@ -64,3 +64,14 @@ test('a saved form is the same file as an exported one', async () => {
   await createSavedForm(storage).save(renamed);
   assert.equal(storage.text, stringifyPackage(renamed));
 });
+
+test("a tab opened before Rosebud was reloaded says to reload, not just 'unreadable'", async () => {
+  (globalThis as { chrome?: unknown }).chrome = { runtime: {} }; // what an old bridge script sees
+  try {
+    const { chromeFormStorage } = await import('../src/savedForm/chromeStorage.js');
+    const { problem } = await createSavedForm(chromeFormStorage).load();
+    assert.match(problem ?? '', /reload RevolutionEHR/);
+  } finally {
+    delete (globalThis as { chrome?: unknown }).chrome;
+  }
+});
