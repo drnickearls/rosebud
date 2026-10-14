@@ -159,3 +159,7 @@
 - Printed text only (the form itself is unchanged): **Name 20 pt bold, Age 20 pt bold, D.O.B. 15 pt bold**, each shrinking to fit its blank (long names / "14 mo" shrink). D.O.B. is limited by the space between its label and "Age" on the existing one-line form. A form change (name/age row and D.O.B./ID row, 18 pt, one extra line) was prototyped and works, but was set aside at the user's request; the spreadsheet recipe is in this day's chat only.
 - New printed value **Provider** (last name only), **20 pt bold at the top-left of the page**, fed from the appointment's provider (chart: next appointment / today's schedule row; schedule: the row's provider). Fields can now be **bold** (template `bold`, settings page "Bold" box).
 - Provider is missing from a custom form saved earlier; add it on the settings page ("+ Provider") or use the built-in form.
+
+## Stable save point (2026-10-14)
+- Git tag **`stable-2026-10-14`** = commit `ebde1ac` = release v0.1.2: chart and schedule printing, provider/name/age/D.O.B. sizes, "0" balance, drag-and-drop form settings, front desk guide; live-tested on fake patients; 23 tests pass. To get back to it: `git checkout stable-2026-10-14` (or `git switch -c recover stable-2026-10-14`). The v0.1.2 release zip is the installable copy.
+- Architecture changes after this point should happen on a branch (e.g. `git switch -c architecture`), so main stays releasable.
