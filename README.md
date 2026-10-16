@@ -21,4 +21,4 @@ In Edge: `edge://extensions` -> Developer mode -> Load unpacked -> choose `dist/
 ## For the front desk
 
 - [docs/front-desk-guide.pdf](docs/front-desk-guide.pdf): how to print Routing Forms from a chart or the schedule, the RFV note, one-time setup and updating.
-- Releases carry `rosebud-extension-<version>.zip`: unzip it somewhere permanent and load that folder with "Load unpacked" (see the guide).
+- Releases carry `rosebud-extension-<version>.zip`: unzip it into the shared folder every computer loads with "Load unpacked" (see the guide; a computer can also have its own copy).
