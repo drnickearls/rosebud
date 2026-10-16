@@ -1,5 +1,5 @@
 {
-  "name": "Routing Form 2026-10-14",
+  "name": "Routing Form 2026-10-15",
   "blankPdf": "blank-routing-form.pdf",
   "font": "Helvetica",
   "fields": [
@@ -13,35 +13,35 @@
     },
     {
       "key": "date",
-      "x": 208.6,
-      "y": 762,
+      "x": 209,
+      "y": 762.5,
       "size": 10
     },
     {
       "key": "appointmentTime",
-      "x": 471.4,
-      "y": 762,
+      "x": 470,
+      "y": 762.5,
       "size": 10
     },
     {
       "key": "name",
-      "x": 59.6,
+      "x": 63.5,
       "y": 735,
       "size": 20,
-      "maxWidth": 166,
+      "maxWidth": 186,
       "bold": true
     },
     {
       "key": "dob",
-      "x": 273,
+      "x": 298.5,
       "y": 735.5,
       "size": 15,
-      "maxWidth": 72,
+      "maxWidth": 78,
       "bold": true
     },
     {
       "key": "age",
-      "x": 371.5,
+      "x": 404.5,
       "y": 735,
       "size": 20,
       "maxWidth": 52,
@@ -49,24 +49,24 @@
     },
     {
       "key": "patientId",
-      "x": 456.6,
+      "x": 491,
       "y": 734,
       "size": 10,
       "maxWidth": 58
     },
     {
       "key": "balanceDue",
-      "x": 492,
-      "y": 677,
+      "x": 485,
+      "y": 684.5,
       "size": 10,
-      "maxWidth": 44
+      "maxWidth": 45
     },
     {
       "key": "reasonForVisit",
-      "x": 140,
-      "y": 607,
+      "x": 145.5,
+      "y": 588.5,
       "size": 10,
-      "maxWidth": 325
+      "maxWidth": 319
     }
   ]
 }

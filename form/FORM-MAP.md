@@ -1,6 +1,6 @@
 # Routing Form — machine-readable map
 
-Early cell map, from the 10/12 version of the sheet (the current form is `Routing Form 2026-10-13 (edited).xlsx`, where the birth date is one blank; current field positions are in `src/assets/routing-form.template.json`). Sheet1 only; Sheet2/3 empty. Grid A1:K50, portrait, fit-to-page, 0.25–0.28" margins, centered.
+Early cell map, from the 10/12 version of the sheet (the current form is `Routing Form 2026-10-14 (edited).xlsx`, whose rows have moved since: see TODO.md; current field positions are in `src/assets/routing-form.template.json`). Sheet1 only; Sheet2/3 empty. Grid A1:K50, portrait, fit-to-page, 0.25–0.28" margins, centered.
 Cell addresses are the xlsx cells where the label text starts. Underscores (`____`) are the handwriting blanks.
 
 ## Fields Rosebud pre-fills (v1)

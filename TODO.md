@@ -180,3 +180,9 @@
 - 58 tests pass. Settings page checked in a local stand-in (9 boxes, drag snap, Shift+arrow, A-, Save, damaged file, reset) and live: a saved Name size of 18 printed at 18 on Potter, Albus's chart, then reset.
 - Live-check order: rebuild -> reload Rosebud -> reload RevolutionEHR (signs out) and sign in. Reloading or closing that tab signs the user out.
 - Released **v0.1.3** (commit f9ed901, tag `v0.1.3`): zip + guide PDF on GitHub, marked latest. To go back to v0.1.2: tag `stable-2026-10-14`.
+
+## New default Routing Form (2026-10-16, released as v0.1.4)
+- Source: the user's sheet of 10/14 (saved 10/15). Kept as `form/Routing Form 2026-10-14 (edited).xlsx` with ONE change: the "No <coworker name>?" box reads **"No Scribe?"** (the public repo carries no coworker names; the user chose the wording). The user's own copy is not in the repo.
+- The user's changes: longer Name and D.O.B. blanks, insurance rows rearranged, Reason For Visit moved down a row block, clinical block reorganised. None of the old symbol-font or cut-off problems came back, so no other fixes were needed.
+- Exported with LibreOffice to `form/blank-routing-form.pdf` (= `src/assets/blank-routing-form.pdf`). Template `Routing Form 2026-10-15`: date 209/762.5, appointment time 470/762.5, name 63.5/735 (max 186), D.O.B. 298.5/735.5 (max 78), age 404.5/735, ID # 491/734, balance 485/684.5 (max 45), reason 145.5/588.5 (max 319); provider unchanged. Checked by printing the sample patient with Rosebud's own PDF code.
+- Computers with a custom form saved on the settings page keep that form; "Use the built-in form" switches them to this one.
