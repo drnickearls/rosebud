@@ -1,6 +1,7 @@
 import { render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import type { ScheduleChoice, ScheduleInfo, Ui } from '../app.js';
+import { autoClose, fadesOnItsOwn, type AutoClose } from './autoClose.js';
 import { STYLES } from './styles.js';
 
 type Option = { label: string; detail?: string; value: unknown };
@@ -78,11 +79,26 @@ function Panel({ spec }: { spec: ButtonSpec | null }) {
     return () => void listeners.delete(rerender);
   }, []);
   const close = () => setState({ kind: 'idle' });
+  const [fading, setFading] = useState(false);
+  const [timer, setTimer] = useState<AutoClose | null>(null);
+  const shown = state;
+  useEffect(() => {
+    setFading(false);
+    if (!fadesOnItsOwn(shown)) {
+      setTimer(null);
+      return;
+    }
+    const t = autoClose(setFading, () => {
+      if (state === shown) close(); // a newer message has its own rules
+    });
+    setTimer(t);
+    return () => t.cancel();
+  }, [shown]);
 
   return (
     <div class="wrap">
       {state.kind !== 'idle' && (
-        <div class="panel" role="status">
+        <div class={fading ? 'panel fading' : 'panel'} role="status" onMouseEnter={() => timer?.pause()} onMouseLeave={() => timer?.resume()}>
           {state.kind === 'working' && (
             <>
               <p class="working">

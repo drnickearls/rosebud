@@ -6,6 +6,7 @@ export const STYLES = `
 .fab:disabled { opacity: .6; cursor: default; }
 .panel { background: #fff; border: 1px solid #d1d5db; border-radius: 10px; padding: 12px 14px; width: 320px; max-width: calc(100vw - 32px); box-shadow: 0 6px 24px rgba(0,0,0,.25); }
 .panel p { margin: 0 0 8px; }
+.panel.fading { opacity: 0; transition: opacity 400ms ease; }
 .title { font-weight: 600; }
 .working { display: flex; align-items: center; gap: 8px; }
 .spin { width: 14px; height: 14px; border: 2px solid #e5e7eb; border-top-color: #be1848; border-radius: 50%; animation: s 0.8s linear infinite; flex: none; }

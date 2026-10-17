@@ -4,10 +4,10 @@
 
 **Stopping point: the front desk is trialling Rosebud (v0.1.4 = v0.1.3 + the new default Routing Form).** No job is open. Next work starts from what the trial turns up.
 
-- Released: **v0.1.4** (tag `v0.1.4`): the new default form of 10/14 (TODO.md "New default Routing Form (2026-10-16)"). v0.1.3 (tag `v0.1.3`) = the architecture rework. `main` is clean; the only branch is `main`.
+- Released: **v0.1.4** (tag `v0.1.4`): the new default form of 10/14, the shared-drive guide, and self-fading messages (TODO.md "New default Routing Form (2026-10-16)"). v0.1.3 (tag `v0.1.3`) = the architecture rework. `main` is clean; the only branch is `main`.
 - Fallback: tag `stable-2026-10-14` = v0.1.2 (the release before the architecture rework). Its zip is still on GitHub.
 - The user may move each computer to load Rosebud from ONE unzipped folder on a shared drive (remove the extension, load unpacked from the share); then an update = replace the files once + reload Rosebud on each computer.
-- 58 tests pass (`npm test`); `npm run typecheck` is clean.
+- 62 tests pass (`npm test`); `npm run typecheck` is clean.
 
 ### When the trial reports back
 
