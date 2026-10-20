@@ -6,7 +6,7 @@
 
 - Released: **v0.1.5** (tag `v0.1.5`): Share form / Load a form file use the `forms` folder inside the Rosebud folder (TODO.md "Share form (2026-10-20)"). Not yet checked with Edge's real file windows on the shared drive: ask how the first Share and Load went. v0.1.4 = the new default form, the shared-drive guide, and self-fading messages; v0.1.3 = the architecture rework. `main` is clean; the only branch is `main`.
 - Fallback: tag `stable-2026-10-14` = v0.1.2 (the release before the architecture rework). Its zip is still on GitHub.
-- Every computer loads Rosebud from ONE unzipped folder on the office server (set up 2026-10; working). An update = replace the files once + reload Rosebud on each computer. A saved form stays per computer; Share form + Load a form file copies it.
+- Every computer loads Rosebud from ONE unzipped folder on the office server (set up 2026-10; working). Edge ties Rosebud to that exact folder path: an update must replace the folder's CONTENTS, never the folder (a new or renamed folder breaks the install; the user confirmed 2026-10-20). An update = replace the files once + reload Rosebud on each computer. A saved form stays per computer; Share form + Load a form file copies it.
 - 62 tests pass (`npm test`); `npm run typecheck` is clean.
 
 ### When the trial reports back
