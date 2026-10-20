@@ -1,12 +1,12 @@
 # Rosebud: handoff
 
-## Where to pick up (2026-10-16)
+## Where to pick up (2026-10-20)
 
-**Stopping point: the front desk is trialling Rosebud (v0.1.4 = v0.1.3 + the new default Routing Form).** No job is open. Next work starts from what the trial turns up.
+**Stopping point: the front desk is trialling Rosebud v0.1.5.** No job is open. Next work starts from what the trial turns up.
 
-- Released: **v0.1.4** (tag `v0.1.4`): the new default form of 10/14, the shared-drive guide, and self-fading messages (TODO.md "New default Routing Form (2026-10-16)"). v0.1.3 (tag `v0.1.3`) = the architecture rework. `main` is clean; the only branch is `main`.
+- Released: **v0.1.5** (tag `v0.1.5`): Share form / Load a form file use the `forms` folder inside the Rosebud folder (TODO.md "Share form (2026-10-20)"). Not yet checked with Edge's real file windows on the shared drive: ask how the first Share and Load went. v0.1.4 = the new default form, the shared-drive guide, and self-fading messages; v0.1.3 = the architecture rework. `main` is clean; the only branch is `main`.
 - Fallback: tag `stable-2026-10-14` = v0.1.2 (the release before the architecture rework). Its zip is still on GitHub.
-- The user may move each computer to load Rosebud from ONE unzipped folder on a shared drive (remove the extension, load unpacked from the share); then an update = replace the files once + reload Rosebud on each computer.
+- Every computer loads Rosebud from ONE unzipped folder on the office server (set up 2026-10; working). An update = replace the files once + reload Rosebud on each computer. A saved form stays per computer; Share form + Load a form file copies it.
 - 62 tests pass (`npm test`); `npm run typecheck` is clean.
 
 ### When the trial reports back
@@ -39,7 +39,7 @@
    `msedge --headless=new --disable-gpu --no-pdf-header-footer --print-to-pdf="<repo>\docs\front-desk-guide.pdf" "file:///<repo>/docs/front-desk-guide.html"`.
    Check it: still 2 pages, new zip name present.
 4. Commit "Rosebud X.Y.Z", tag `vX.Y.Z`, push `main` and the tag.
-5. Zip `dist/extension` with Windows `tar.exe -a -c -f rosebud-extension-X.Y.Z.zip manifest.json page.js bridge.js background.js options.js options.html options.css pdf.worker.min.mjs icons` (forward-slash paths; PowerShell 5 `Compress-Archive` writes backslashes). Files sit at the zip's top level, same as v0.1.2.
+5. Zip `dist/extension` with Windows `tar.exe -a -c -f rosebud-extension-X.Y.Z.zip manifest.json page.js bridge.js background.js options.js options.html options.css pdf.worker.min.mjs icons forms` (forward-slash paths; PowerShell 5 `Compress-Archive` writes backslashes). Files sit at the zip's top level, same as v0.1.2.
 6. `gh release create vX.Y.Z --title "Rosebud X.Y.Z" --notes-file notes.md rosebud-extension-X.Y.Z.zip "Rosebud Front Desk Guide.pdf"`. Notes are plain language for the front desk and end with how to update.
 7. Check the release is "latest" with both files.
 
