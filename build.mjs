@@ -50,6 +50,14 @@ await writeFile(
 await copyFile('src/options/options.css', `${OUT}/options.css`);
 await copyFile('node_modules/pdfjs-dist/build/pdf.worker.min.mjs', `${OUT}/pdf.worker.min.mjs`);
 for (const file of await readdir('src/icons')) await copyFile(`src/icons/${file}`, `${OUT}/icons/${file}`);
+// Where "Share form" puts form files for the other computers. The zip carries only this note,
+// so unzipping a new version over the shared folder leaves the shared forms alone.
+await mkdir(`${OUT}/forms`, { recursive: true });
+await writeFile(
+  `${OUT}/forms/README.txt`,
+  'Rosebud form files (*.rosebud-form.json) shared with "Share form" on the settings page.\r\n' +
+    'To use one on a computer: settings page > Load a form file > choose it > Save.\r\n',
+);
 
 if (watch) {
   for (const options of builds) await (await esbuild.context(options)).watch();

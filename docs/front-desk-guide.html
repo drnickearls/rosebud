@@ -42,7 +42,7 @@
   <li>Click <b>Load unpacked</b> and choose the <b>shared folder</b>.</li>
   <li>Reload your RevolutionEHR tab and sign in again. The rose-colored button appears at the bottom left of the Patient Summary and the Schedule.</li>
 </ol>
-<p><b>A computer that has its own copy of Rosebud</b> (for example in C:\Rosebud): on the extensions page click <b>Remove</b> on the Rosebud card first, then follow the steps above, then delete the old folder. Removing Rosebud also removes a form layout saved on that computer; if it should be kept, use <b>Export this form</b> on the settings page before removing.</p>
+<p><b>A computer that has its own copy of Rosebud</b> (for example in C:\Rosebud): on the extensions page click <b>Remove</b> on the Rosebud card first, then follow the steps above, then delete the old folder. Removing Rosebud also removes a form layout saved on that computer; if it should be kept, use <b>Share form</b> on the settings page before removing.</p>
 
 <h3>Updating to a new version</h3>
 <ol>
@@ -50,7 +50,14 @@
   <li><b>Each computer:</b> click the circular <b>reload</b> arrow on the Rosebud card on the extensions page (or close and reopen the browser), then press <b>F5</b> on RevolutionEHR and sign in again.</li>
 </ol>
 <p><b>If the Rosebud button is missing</b> or the extensions page shows an error on the Rosebud card, the shared drive probably wasn't connected when the browser started. Open the shared drive in File Explorer, then click <b>reload</b> on the Rosebud card.</p>
-<p>To change the form layout later, open the extension's <b>Details &rarr; Extension options</b> (office manager only).</p>
+<h3>Changing the form (office manager)</h3>
+<p>Click the Rosebud button in the browser's toolbar (or the extension's <b>Details &rarr; Extension options</b>) to open the settings page. Move the fields, change sizes, or choose a new blank form, then <b>Test print</b> and <b>Save</b>. <b>Save</b> changes the form on <b>that computer only</b>.</p>
+<p><b>To use the same form on every computer:</b></p>
+<ol>
+  <li>On the computer where you made the change, click <b>Share form</b>. It saves a form file into the <b>forms</b> folder inside the Rosebud folder.</li>
+  <li>On each other computer, open the settings page, click <b>Load a form file</b>, choose that file, check it with <b>Test print</b>, and click <b>Save</b>.</li>
+</ol>
+<p>The first time on each computer, the Share and Load windows open in Documents: go to the <b>forms</b> folder inside the Rosebud folder (for example S:\Rosebud\forms). After that, that computer opens the forms folder by itself. <b>Choose a new blank form</b> always opens in Downloads.</p>
 
 <h2>What it does</h2>
 <p>Rosebud fills in the top of the Routing Form for you &mdash; the date, appointment time, patient name, D.O.B., age, ID #, balance due and the reason for visit &mdash; and opens it as a PDF to print. Everything else on the form is left blank for handwriting.</p>

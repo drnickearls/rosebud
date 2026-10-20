@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import type { ComponentChildren } from 'preact';
 import { bundledAssets } from '../core/assets.js';
 import { FIELD_KEYS, FIELD_LABELS, SAMPLE_VALUES, inspectBlankPdf, parsePackage, stringifyPackage } from '../core/form.js';
 import { buildPdf } from '../core/pdf.js';
@@ -25,6 +24,7 @@ import {
 } from '../formEditor/index.js';
 import { chromeFormStorage } from '../savedForm/chromeStorage.js';
 import { createSavedForm } from '../savedForm/index.js';
+import { formsFolderKnown, pickBlankPdf, pickFormFile, shareFormFile } from './formFiles.js';
 import { openFormPage, type FormPage } from './pdfView.js';
 
 type Message = { kind: 'ok' | 'error'; text: string } | null;
@@ -35,14 +35,8 @@ const LETTER: PageSize = { width: 612, height: 792 };
 
 const savedForm = createSavedForm(chromeFormStorage);
 
-function download(filename: string, text: string): void {
-  const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 10_000);
-}
+const FIRST_TIME =
+  'Go to the "forms" folder inside the Rosebud folder (for example S:\\Rosebud\\forms). After this, this computer opens that folder by itself.';
 
 export function App() {
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -112,21 +106,24 @@ export function App() {
     }
   };
 
-  const onFile = (input: HTMLInputElement) =>
+  const chooseBlankPdf = () =>
     attempt(async () => {
-      const file = input.files?.[0];
-      input.value = '';
+      const file = await pickBlankPdf();
       if (!file) return;
-      if (/\.pdf$/i.test(file.name)) {
-        const blankPdf = new Uint8Array(await file.arrayBuffer());
-        await inspectBlankPdf(blankPdf);
-        edit({ ...draft, blankPdf });
-        setMessage({ kind: 'ok', text: 'New blank form loaded. Click "Suggest positions" to place the boxes by the form\'s labels, then drag each box onto its blank.' });
-      } else {
-        const assets = await parsePackage(await file.text());
-        edit(draftOf(assets));
-        setMessage({ kind: 'ok', text: `Loaded "${assets.template.name}". Try Test print, then Save.` });
-      }
+      const blankPdf = new Uint8Array(await file.arrayBuffer());
+      await inspectBlankPdf(blankPdf);
+      edit({ ...draft, blankPdf });
+      setMessage({ kind: 'ok', text: 'New blank form loaded. Click "Suggest positions" to place the boxes by the form\'s labels, then drag each box onto its blank.' });
+    });
+
+  const loadFormFile = () =>
+    attempt(async () => {
+      if (!(await formsFolderKnown())) setMessage({ kind: 'ok', text: FIRST_TIME });
+      const file = await pickFormFile();
+      if (!file) return setMessage(null);
+      const assets = await parsePackage(await file.text());
+      edit(draftOf(assets));
+      setMessage({ kind: 'ok', text: `Loaded "${assets.template.name}". Try Test print, then Save to use it on this computer.` });
     });
 
   const suggest = () =>
@@ -152,10 +149,13 @@ export function App() {
       setMessage({ kind: 'ok', text: 'Saved. New Routing Forms use this form from now on.' });
     });
 
-  const exportForm = () =>
-    attempt(() => {
+  const shareForm = () =>
+    attempt(async () => {
       const assets = assetsOf(draft);
-      download(`${assets.template.name.replace(/[^\w.-]+/g, '-')}.rosebud-form.json`, stringifyPackage(assets));
+      if (!(await formsFolderKnown())) setMessage({ kind: 'ok', text: FIRST_TIME });
+      const saved = await shareFormFile(`${assets.template.name.replace(/[^\w.-]+/g, '-')}.rosebud-form.json`, stringifyPackage(assets));
+      if (!saved) return setMessage(null);
+      setMessage({ kind: 'ok', text: `Shared as "${saved}". On another computer: Load a form file, choose it, then Save.` });
     });
 
   const builtIn = () =>
@@ -188,17 +188,17 @@ export function App() {
           Form name
           <input type="text" value={draft.name} onInput={(e) => edit({ ...draft, name: (e.target as HTMLInputElement).value })} />
         </label>
-        <FileButton accept=".pdf,application/pdf" onPick={onFile}>
+        <button class="btn" onClick={() => void chooseBlankPdf()}>
           Choose a new blank form (PDF)&hellip;
-        </FileButton>
+        </button>
         <button class="btn" onClick={() => void suggest()} disabled={!page}>
           Suggest positions
         </button>
-        <FileButton accept=".json,application/json" onPick={onFile}>
+        <button class="btn" onClick={() => void loadFormFile()}>
           Load a form file&hellip;
-        </FileButton>
-        <button class="btn" onClick={() => void exportForm()}>
-          Export
+        </button>
+        <button class="btn" onClick={() => void shareForm()}>
+          Share form&hellip;
         </button>
       </div>
 
@@ -298,15 +298,6 @@ export function App() {
         </aside>
       </div>
     </div>
-  );
-}
-
-function FileButton({ accept, onPick, children }: { accept: string; onPick: (input: HTMLInputElement) => void; children: ComponentChildren }) {
-  return (
-    <label class="btn">
-      {children}
-      <input type="file" accept={accept} hidden onChange={(e) => onPick(e.target as HTMLInputElement)} />
-    </label>
   );
 }
 
