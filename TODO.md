@@ -13,7 +13,7 @@
 - [ ] After the trial: ask whether to keep the patient list on the Provider Cover Page.
 - [ ] Not yet exercised live: the today-or-next chooser in the new code (needs a fake patient checked in today) and the Stop button (runs finish too fast to click).
 - [ ] Unverified: a status that is neither shown nor hidden today (e.g. a no-show not yet marked) — Rosebud hides only 2, 5, 6.
-- [ ] Unconfirmed: the "□" glyph on the four checkbox items of the form is what they should show.
+- [x] ~~"□" glyph on the four checkbox items~~: moot since the 10/14 form (v0.1.4), which has no symbol-font items.
 - [ ] Possible later: more Pre-filled Fields (each new kind of value needs a code change, then appears on the settings page).
 - Done since the first list: form changes without code (settings page), blank PDF export (LibreOffice), Schedule Mode. Dropped: the Reason For Visit prompt (replaced by RFV in Comments).
 
@@ -26,9 +26,9 @@
 
 ## Progress (2026-10-13)
 - [x] LibreOffice installed; blank PDF exported to `form/blank-routing-form.pdf` (single page, matches the sheet).
-- [ ] Known flaw in that export: the sheet's Wingdings checkbox/arrow characters print as "ð" (before Screening Photo, EF, NCT, Still Dilating). Fix when finalising the Form Template (redraw as ☐ or replace the font).
+- [x] (Fixed 2026-10-13; gone from the 10/14 form.) Known flaw in that export: the sheet's Wingdings checkbox/arrow characters print as "ð" (before Screening Photo, EF, NCT, Still Dilating). Fix when finalising the Form Template (redraw as ☐ or replace the font).
 - Settled: multiple appointments in a day → earliest one. No appointment today → message, print nothing. Services may be read with page-text fallback.
-- [ ] Still unseen: how an appointment (date/time) appears. Needs a patient with an appointment today.
+- [x] (Seen 2026-10-13, see "Appointment findings".) Still unseen: how an appointment (date/time) appears. Needs a patient with an appointment today.
 - Note: the Coding Companion drives RevolutionEHR's screens (DOM/Syncfusion grids), not its JSON services; Rosebud's read-only data needs may justify the services.
 
 ## Appointment findings (2026-10-13, test appt on user's chart)
@@ -191,4 +191,4 @@
 ## Share form (2026-10-20, released as v0.1.5)
 - A browser extension can't write to its own folder, so a form change can't flow to every computer by itself. Instead, on the settings page: **Share form** (was Export) saves the form file into the `forms` folder inside the Rosebud folder; **Load a form file** opens there; **Choose a new blank form** always opens in Downloads. Each computer still Saves for itself.
 - Edge can't open a dialog at a named path, only at a well-known folder or a file chosen before. So the forms folder is remembered per computer (IndexedDB, last shared/loaded file handle): the first Share or Load opens in Documents with a hint to go to Rosebud\forms. Code: `src/options/formFiles.ts`. The build ships `forms/README.txt`, so unzipping a new version over the shared folder leaves shared forms alone.
-- Checked in the settings-page harness with stand-in dialogs (real browser file handles): first Share in Documents, then the remembered folder; Load in the remembered folder; blank PDF in Downloads; the shared file reloads. NOT checked yet on a real computer with Edge's own dialogs and the shared drive.
+- Checked in the settings-page harness with stand-in dialogs (real browser file handles): first Share in Documents, then the remembered folder; Load in the remembered folder; blank PDF in Downloads; the shared file reloads. On the office computers (2026-10-20): Share form works with Edge's own windows on the server folder.
