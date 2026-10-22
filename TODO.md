@@ -193,7 +193,7 @@
 - Edge can't open a dialog at a named path, only at a well-known folder or a file chosen before. So the forms folder is remembered per computer (IndexedDB, last shared/loaded file handle): the first Share or Load opens in Documents with a hint to go to Rosebud\forms. Code: `src/options/formFiles.ts`. The build ships `forms/README.txt`, so unzipping a new version over the shared folder leaves shared forms alone.
 - Checked in the settings-page harness with stand-in dialogs (real browser file handles): first Share in Documents, then the remembered folder; Load in the remembered folder; blank PDF in Downloads; the shared file reloads. On the office computers (2026-10-20): Share form works with Edge's own windows on the server folder.
 
-## Nicknames on the forms (2026-10-21, not yet released)
+## Nicknames on the forms (2026-10-21, released as v0.1.6)
 - The user asked for the chart's nickname in quotation marks, as RevolutionEHR's chart header shows it: First "Nick" Last. None: the plain First Last.
 - Source: `nickname` in the patient name object of BOTH services (`getPatientDashboardSummaryById` name.nickname for Chart Mode; `findScheduleItems` patientName.nickname for Schedule Mode). Found on fake data: Potter, Albus = "Alby" (added by the user for the test), Test, Patient = "Trizetto".
 - Rule `printedName` (src/core/format.ts): quotes typed in the chart aren't doubled; a nickname equal to the first name adds nothing. Used on the form's Name line and the cover page's patient list; messages keep the plain name. Long names shrink to fit as before.

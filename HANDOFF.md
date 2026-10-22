@@ -2,13 +2,13 @@
 
 ## Where to pick up (2026-10-21)
 
-**Stopping point: v0.1.5 is installed and in use; the front desk trial continues.** No job is open. Next work starts from what the trial turns up.
+**Stopping point: v0.1.6 released (nicknames on the forms); the front desk trial continues.** No job is open. Next work starts from what the trial turns up.
 
-- Released: **v0.1.5** (tag `v0.1.5`): Share form / Load a form file use the `forms` folder inside the Rosebud folder (TODO.md "Share form (2026-10-20)"). Installed from the server folder; the user confirmed **Share form works** with Edge's real file windows (2026-10-20). Load a form file on a second computer not explicitly reported yet. The release's guide PDF was re-uploaded after the 'replace the contents, keep the folder' wording (2026-10-20). v0.1.4 = the new default form, the shared-drive guide, and self-fading messages; v0.1.3 = the architecture rework. `main` is clean; the only branch is `main`.
+- Released: **v0.1.6** (tag `v0.1.6`): the chart's nickname prints in quotation marks, First "Nick" Last (TODO.md "Nicknames on the forms"); check the office install has it. Before that, **v0.1.5** (tag `v0.1.5`): Share form / Load a form file use the `forms` folder inside the Rosebud folder (TODO.md "Share form (2026-10-20)"). Installed from the server folder; the user confirmed **Share form works** with Edge's real file windows (2026-10-20). Load a form file on a second computer not explicitly reported yet. The release's guide PDF was re-uploaded after the 'replace the contents, keep the folder' wording (2026-10-20). v0.1.4 = the new default form, the shared-drive guide, and self-fading messages; v0.1.3 = the architecture rework. `main` is clean; the only branch is `main`.
 - Fallback: tag `stable-2026-10-14` = v0.1.2 (the release before the architecture rework). Its zip is still on GitHub.
 - Every computer loads Rosebud from ONE unzipped folder on the office server (set up 2026-10; working). Edge ties Rosebud to that exact folder path: an update must replace the folder's CONTENTS, never the folder (a new or renamed folder breaks the install; the user confirmed 2026-10-20). An update = replace the files once + reload Rosebud on each computer. A saved form stays per computer; Share form + Load a form file copies it.
 - New default forms come from the user as a spreadsheet: see "Changing the built-in form" below.
-- 62 tests pass (`npm test`); `npm run typecheck` is clean.
+- 65 tests pass (`npm test`); `npm run typecheck` is clean.
 
 ### When the trial reports back
 
