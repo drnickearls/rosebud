@@ -46,11 +46,15 @@ export function datePart(text: string | null | undefined): CalendarDate | null {
 export const chartNameOf = (name: PersonName | null | undefined): string =>
   name ? [name.lastName?.trim(), name.firstName?.trim()].filter(Boolean).join(', ') : '';
 
+/** The nickname trimmed; null when there is none. */
+const nicknameOf = (name: PersonName | null | undefined): string | null => name?.nickname?.trim() || null;
+
 export function toPatient(summary: DashboardSummary, encounters: LastAndNext): Patient {
   const next = encounters.nextAppointmentResponse;
   const lastDate = encounters.lastEncounterResponse?.encounterDate;
   return {
     chartName: chartNameOf(summary.name),
+    nickname: nicknameOf(summary.name),
     dob: datePart(summary.dateOfBirth),
     lastExam: lastDate ? localWhen(lastDate).date : null,
     next: next
@@ -64,6 +68,7 @@ export const toAppointment = (a: DayAppointment): Appointment => ({
   id: a.scheduleItemId,
   patientId: String(a.patientName.patientId),
   chartName: chartNameOf(a.patientName),
+  nickname: nicknameOf(a.patientName),
   dob: datePart(a.patientDob),
   provider: chartNameOf(a.provider),
   ...localWhen(a.startDate),

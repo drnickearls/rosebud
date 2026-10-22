@@ -13,6 +13,22 @@ export function firstLast(chartName: string): string {
   return [first, last].filter(Boolean).join(' ');
 }
 
+/**
+ * The name as the Routing Form and cover page print it: "Potter, Albus" + "Alby" becomes
+ * Albus "Alby" Potter, as RevolutionEHR's chart header shows it. No nickname (or one that is
+ * just the first name) prints the plain "Albus Potter".
+ */
+export function printedName(chartName: string, nickname: string | null | undefined): string {
+  const nick = (nickname ?? '').replace(/["“”]/g, '').replace(/\s+/g, ' ').trim();
+  const plain = firstLast(chartName);
+  const name = chartName.replace(/\s+/g, ' ').trim();
+  const comma = name.indexOf(',');
+  const first = comma < 0 ? '' : name.slice(comma + 1).trim();
+  if (!nick || nick.toLowerCase() === first.toLowerCase()) return plain;
+  if (comma < 0) return `"${nick}" ${name}`.trim();
+  return [first, `"${nick}"`, name.slice(0, comma).trim()].filter(Boolean).join(' ');
+}
+
 /** "Dumbledore, Albus" becomes "Dumbledore" (the provider is printed by last name only). */
 export function lastNameOnly(chartName: string): string {
   const name = chartName.replace(/\s+/g, ' ').trim();
@@ -79,6 +95,7 @@ export function reasonLine(examType: string, rfv: string | null): string {
 
 export interface PatientFacts {
   chartName: string; // "Potter, Harry"
+  nickname: string | null; // "Scarhead", printed in quotation marks
   dob: CalendarDate | null; // null when the source did not show it: D.O.B. and Age print blank
   patientId: string;
   patientBalance: string | null; // as shown: "$0.00"
@@ -99,7 +116,7 @@ export function formValues(patient: PatientFacts, appointment: AppointmentFacts)
     provider: lastNameOnly(appointment.provider),
     date: formatUsDate(appointment.date),
     appointmentTime: appointment.time,
-    name: firstLast(patient.chartName),
+    name: printedName(patient.chartName, patient.nickname),
     dob: patient.dob ? formatUsDate(patient.dob) : '',
     age: patient.dob ? ageOn(patient.dob, appointment.date) : '',
     patientId: patient.patientId,

@@ -32,6 +32,8 @@ async function post<T>(path: string, body: unknown, signal?: AbortSignal): Promi
 export interface PersonName {
   lastName: string;
   firstName: string;
+  /** Patients only: the chart's nickname, null when there is none. */
+  nickname?: string | null;
 }
 
 /** One appointment in a day's list, as the service sends it. */

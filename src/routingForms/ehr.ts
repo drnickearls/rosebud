@@ -33,6 +33,8 @@ export interface ScheduleScreen {
 
 export interface Patient {
   chartName: string; // "Potter, Albus"
+  /** The chart's nickname ("Alby"), or null when there is none. */
+  nickname: string | null;
   dob: CalendarDate | null;
   /** The Last Exam date; today's when the patient has been checked in today. */
   lastExam: CalendarDate | null;
@@ -52,6 +54,7 @@ export interface Appointment {
   id: number;
   patientId: string;
   chartName: string; // "Potter, Albus"
+  nickname: string | null;
   dob: CalendarDate | null;
   provider: string; // "Last, First", as the schedule's column header shows it
   date: CalendarDate;

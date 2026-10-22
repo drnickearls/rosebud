@@ -11,7 +11,7 @@
  */
 
 import { cleanExamType, parseRfv } from '../core/appointment.js';
-import { dateLabel, firstLast, formatUsDate, formValues, sameDate, timeToMinutes } from '../core/format.js';
+import { dateLabel, firstLast, formatUsDate, formValues, printedName, sameDate, timeToMinutes } from '../core/format.js';
 import { buildPdf, type FormAssets } from '../core/pdf.js';
 import { groupByProvider } from '../core/schedule.js';
 import type { CalendarDate, PrintPart } from '../core/types.js';
@@ -89,6 +89,7 @@ const HIDDEN_STATUSES = new Set([2, 5, 6]);
 interface Visit {
   patientId: string;
   chartName: string;
+  nickname: string | null;
   dob: CalendarDate | null;
   balance: number | null;
   provider: string;
@@ -184,7 +185,7 @@ export function createRoutingForms({ ehr, form, now }: RoutingFormsDeps): Routin
 
     if (!patient.dob) notes.push(`${name} has no date of birth in RevolutionEHR; D.O.B. and Age are blank on the form.`);
     return {
-      groups: [{ provider: visit.provider, cover: false, visits: [{ patientId: id, chartName: patient.chartName, dob: patient.dob, balance, ...visit }] }],
+      groups: [{ provider: visit.provider, cover: false, visits: [{ patientId: id, chartName: patient.chartName, nickname: patient.nickname, dob: patient.dob, balance, ...visit }] }],
       notes,
     };
   }
@@ -249,6 +250,7 @@ export function createRoutingForms({ ehr, form, now }: RoutingFormsDeps): Routin
       visitOf.set(a, {
         patientId: a.patientId,
         chartName: a.chartName,
+        nickname: a.nickname,
         dob: a.dob,
         balance,
         provider: a.provider,
@@ -269,7 +271,7 @@ export function createRoutingForms({ ehr, form, now }: RoutingFormsDeps): Routin
         (v): PrintPart => ({
           kind: 'form',
           values: formValues(
-            { chartName: v.chartName, dob: v.dob, patientId: v.patientId, patientBalance: v.balance === null ? null : String(v.balance) },
+            { chartName: v.chartName, nickname: v.nickname, dob: v.dob, patientId: v.patientId, patientBalance: v.balance === null ? null : String(v.balance) },
             { provider: v.provider, date: v.date, time: v.time, examType: cleanExamType(v.examType), rfv: v.rfv },
           ),
         }),
@@ -281,7 +283,7 @@ export function createRoutingForms({ ehr, form, now }: RoutingFormsDeps): Routin
         cover: {
           provider: group.provider,
           dateLabel: dateLabel(first.date),
-          rows: group.visits.map((v) => ({ time: v.time, name: firstLast(v.chartName), examType: cleanExamType(v.examType) })),
+          rows: group.visits.map((v) => ({ time: v.time, name: printedName(v.chartName, v.nickname), examType: cleanExamType(v.examType) })),
         },
       };
       return [cover, ...forms];

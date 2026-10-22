@@ -9,7 +9,7 @@ The one-page paper form the practice prints per patient visit and fills in by ha
 _Avoid_: print form
 
 **Pre-filled Field**:
-A Routing Form field Rosebud prints for the user, as opposed to one left blank for handwriting. Now (v0.1.3): Provider, Date, Appointment Time, Name, D.O.B., Age, ID #, Balance Due, Reason For Visit. The set is expected to change later.
+A Routing Form field Rosebud prints for the user, as opposed to one left blank for handwriting. Now: Provider, Date, Appointment Time, Name (First "Nickname" Last when the chart has a nickname), D.O.B., Age, ID #, Balance Due, Reason For Visit. The set is expected to change later.
 _Avoid_: autofill (RevolutionEHR-side meaning), merge field
 
 **Form Template**:

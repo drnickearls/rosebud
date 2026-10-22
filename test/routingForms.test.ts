@@ -15,6 +15,7 @@ const ALBUS = '117821028';
 
 const albus = (over: Partial<Patient> = {}): Patient => ({
   chartName: 'Potter, Albus ', // the service leaves a trailing space on the first name
+  nickname: null,
   dob: { year: 2008, month: 1, day: 5 },
   lastExam: { year: 2024, month: 5, day: 30 },
   next: null,
@@ -29,6 +30,7 @@ const appt = (patientId: string, chartName: string, provider: string, time: stri
   id: ++ids,
   patientId,
   chartName,
+  nickname: null,
   dob: { year: 1980, month: 7, day: 31 },
   provider,
   date: TODAY,
@@ -293,4 +295,27 @@ test("a saved form that couldn't be used is reported with the print's warnings",
   const printed = await s.print({ mode: 'schedule', providers: ['Jones, Hestia'] });
   assert.equal(printed.count, 1);
   assert.deepEqual(printed.warnings, ['The form saved on this computer could not be read, so the built-in form was used.']);
+});
+
+test('chart: a nickname prints in quotation marks between first and last name', async () => {
+  const { ehr, print } = setup({
+    patients: { [ALBUS]: albus({ next: nextXmas, nickname: 'Alby' }) },
+    balances: { [ALBUS]: 0 },
+    details: { 501: { examType: null, comments: '' } },
+  });
+  ehr.onScreen.patientId = ALBUS;
+  const printed = await print({ mode: 'chart', source: 'next' });
+  assert.equal(formsOf(printed.parts)[0]!.name, 'Albus "Alby" Potter');
+});
+
+test('schedule: nicknames on the forms and the cover page; none means the plain name', async () => {
+  const s = scheduleDay([
+    appt('1', 'Potter, Harry', 'Dumbledore, Albus', '8:00 AM', { nickname: 'Scarhead' }),
+    appt('2', 'Doe, Jane', 'Dumbledore, Albus', '9:00 AM'),
+  ]);
+  const printed = await s.print({ mode: 'schedule', providers: ['Dumbledore, Albus'] });
+  assert.deepEqual(outline(printed.parts), ['cover Dumbledore, Albus', 'Harry "Scarhead" Potter 8:00 AM', 'Jane Doe 9:00 AM']);
+  const cover = printed.parts[0]!;
+  assert.ok(cover.kind === 'cover');
+  assert.deepEqual(cover.cover.rows.map((r) => r.name), ['Harry "Scarhead" Potter', 'Jane Doe']);
 });

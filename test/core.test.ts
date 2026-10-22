@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { cleanExamType, parseRfv } from '../src/core/appointment.js';
-import { ageOn, balanceText, firstLast, lastNameOnly, formValues, parseUsDate, reasonLine, timeToMinutes } from '../src/core/format.js';
+import { ageOn, balanceText, firstLast, printedName, lastNameOnly, formValues, parseUsDate, reasonLine, timeToMinutes } from '../src/core/format.js';
 import { groupByProvider, type ScheduleEntry } from '../src/core/schedule.js';
 
 test('lastNameOnly keeps the part before the comma', () => {
@@ -74,7 +74,7 @@ test('Reason For Visit line', () => {
 
 test('formValues puts it together', () => {
   const v = formValues(
-    { chartName: 'Potter, Harry', dob: { year: 1980, month: 7, day: 31 }, patientId: '117820477', patientBalance: '$0.00' },
+    { chartName: 'Potter, Harry', nickname: null, dob: { year: 1980, month: 7, day: 31 }, patientId: '117820477', patientBalance: '$0.00' },
     { provider: 'Dumbledore, Albus', date: { year: 2026, month: 10, day: 13 }, time: '9:00 PM', examType: 'Long Medical', rfv: null },
   );
   assert.deepEqual(v, {
@@ -101,4 +101,13 @@ test('groupByProvider: provider first (screen order), then time, one per patient
     ['B', ['Bee, Al']],
   ]);
   assert.equal(groups[1]!.entries[0]!.time, '8:00 AM');
+});
+
+test('printedName: First "Nick" Last, or the plain name', () => {
+  assert.equal(printedName('Potter, Albus', 'Alby'), 'Albus "Alby" Potter');
+  assert.equal(printedName('Potter, Albus', null), 'Albus Potter');
+  assert.equal(printedName('Potter, Albus', '  '), 'Albus Potter');
+  assert.equal(printedName('Potter, Albus', ' "Alby" '), 'Albus "Alby" Potter'); // quotes typed in the chart aren't doubled
+  assert.equal(printedName('Potter, Albus', 'albus'), 'Albus Potter'); // a nickname that is just the first name adds nothing
+  assert.equal(printedName('Cher', 'Ch'), '"Ch" Cher');
 });

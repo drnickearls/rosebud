@@ -25,7 +25,7 @@ test('a birth date is its date part, never moved by the time zone', () => {
 
 test('the patient: names trimmed, Last Exam on the local day, next appointment on the local clock', () => {
   const patient = toPatient(
-    { name: { lastName: 'Potter', firstName: 'Albus ' }, dateOfBirth: '2008-01-05T18:00:00Z', primaryLocation: { id: 7 } },
+    { name: { lastName: 'Potter', firstName: 'Albus ', nickname: ' Alby ' }, dateOfBirth: '2008-01-05T18:00:00Z', primaryLocation: { id: 7 } },
     {
       lastEncounterResponse: { encounterDate: '2024-05-30T14:31:38Z' },
       nextAppointmentResponse: { appointmentId: 501, startDate: '2026-12-25T14:00:00Z', templateName: 'Long Medical', provider: { lastName: 'Jones ', firstName: 'Hestia' } },
@@ -33,6 +33,7 @@ test('the patient: names trimmed, Last Exam on the local day, next appointment o
   );
   assert.deepEqual(patient, {
     chartName: 'Potter, Albus',
+    nickname: 'Alby',
     dob: { year: 2008, month: 1, day: 5 },
     lastExam: { year: 2024, month: 5, day: 30 },
     next: { id: 501, date: { year: 2026, month: 12, day: 25 }, time: '9:00 AM', examType: 'Long Medical', provider: 'Jones, Hestia' },
@@ -40,7 +41,7 @@ test('the patient: names trimmed, Last Exam on the local day, next appointment o
   });
   assert.deepEqual(
     toPatient({ name: null, dateOfBirth: null, primaryLocation: null }, { lastEncounterResponse: null, nextAppointmentResponse: null }),
-    { chartName: '', dob: null, lastExam: null, next: null, primaryLocationId: null },
+    { chartName: '', nickname: null, dob: null, lastExam: null, next: null, primaryLocationId: null },
   );
 });
 
@@ -50,7 +51,7 @@ test('a day-list appointment', () => {
       scheduleItemId: 9,
       startDate: '2026-09-27T13:00:00Z',
       status: 0,
-      patientName: { lastName: 'Potter', firstName: 'Harry ', patientId: 117820477 },
+      patientName: { lastName: 'Potter', firstName: 'Harry ', nickname: null, patientId: 117820477 },
       provider: { lastName: 'Dumbledore', firstName: 'Albus' },
       patientDob: '1980-07-31',
       template: 'Long Medical',
@@ -59,6 +60,7 @@ test('a day-list appointment', () => {
       id: 9,
       patientId: '117820477',
       chartName: 'Potter, Harry',
+      nickname: null,
       dob: { year: 1980, month: 7, day: 31 },
       provider: 'Dumbledore, Albus',
       date: { year: 2026, month: 9, day: 27 },
