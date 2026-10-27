@@ -199,7 +199,7 @@
 - Rule `printedName` (src/core/format.ts): quotes typed in the chart aren't doubled; a nickname equal to the first name adds nothing. Used on the form's Name line and the cover page's patient list; messages keep the plain name. Long names shrink to fit as before.
 - Checked: 65 tests; Rosebud's own reader run in the signed-in tab on the fake chart and the 9/27 day gave Albus "Alby" Potter and Patient "Trizetto" Test, everyone else unchanged; a long name sample shrinks on the Name line.
 
-## Form update (2026-10-27, not yet released)
-- The user sent a PDF of the 10/14 sheet with small changes. It was A4 (ONLYOFFICE export) and read "Byron? Y N", so the same changes were made in the repo's Letter-size sheet instead: "No Scribe?_____" -> "Scribe? Y   N", "No Extern?_____" -> "Extern? Y   N", "CL fit co-pay $_________" (3 more underscores), "Fit disc: 10%   15%" (wider spacing). Kept as `form/Routing Form 2026-10-27 (edited).xlsx`; exported with LibreOffice to Letter.
+## Form update (2026-10-27, released as v0.1.7)
+- The user sent a PDF of the 10/14 sheet with small changes. It was A4 (ONLYOFFICE export) and read "Byron? Y N", so the same changes were made in the repo's Letter-size sheet instead: "No Scribe?_____" -> "Scribe? Y   N", "No Extern?_____" -> "Extern? Y   N", "CL fit co-pay $_________" (3 more underscores), "Fit disc: 10%   15%" (wider spacing); and, asked for separately, G11 "Other______________" -> "Other" (no blank after it). Kept as `form/Routing Form 2026-10-27 (edited).xlsx`; exported with LibreOffice to Letter.
 - Every label Rosebud prints next to stayed exactly where it was, so the field positions are unchanged; template renamed "Routing Form 2026-10-27". Sample print checked.
 - Lesson: a PDF the user exports may be A4; check that `tools/find-text.mjs` reports `size 612 792` before using one.
