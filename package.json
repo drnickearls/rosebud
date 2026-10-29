@@ -1,6 +1,6 @@
 {
   "name": "rosebud",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": true,
   "description": "Edge extension that pre-fills the practice's Routing Form PDF from RevolutionEHR",
   "type": "module",
