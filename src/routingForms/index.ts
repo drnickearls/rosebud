@@ -79,11 +79,12 @@ const NO_APPOINTMENT = 'This patient has no appointment to print a form for.';
 const IN_FLIGHT = 6;
 
 /**
- * Statuses of appointments that are not on the schedule screen: found by comparing a day's
- * service list with its Agenda on screen (2, 5 and 6 never appear there; 0 scheduled and 3
- * completed do). Anything else is kept, so an unfamiliar "arrived" status can't drop a patient.
+ * Statuses of appointments that are not on the schedule screen. RevolutionEHR's own constants
+ * (ScheduleWebServiceConstants, read from its commons.js 2026-10-29): 0 active, 1 cancelled,
+ * 2 rescheduled, 3 completed, 4 in progress, 5 no show, 6 patient cancelled. 1, 2, 5 and 6 are
+ * hidden; anything else is kept, so a status added later can't silently drop a patient.
  */
-const HIDDEN_STATUSES = new Set([2, 5, 6]);
+const HIDDEN_STATUSES = new Set([1, 2, 5, 6]);
 
 /** One Routing Form's facts. */
 interface Visit {

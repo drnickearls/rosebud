@@ -214,16 +214,30 @@ test('schedule: providers in screen order, each behind a cover page, one earlies
   assert.equal(s.messages.at(-1), 'Routing Forms completed: 4 of 4');
 });
 
-test('schedule: cancelled, rescheduled and no-show statuses (2, 5, 6) never print', async () => {
+test('schedule: cancelled (1), rescheduled (2), no-show (5) and patient-cancelled (6) never print', async () => {
   const s = scheduleDay([
+    appt('6', 'Lovegood, Luna', 'Jones, Hestia', '7:50 AM', { status: 1 }), // cancelled by the office (seen 10/30/2026)
     appt('1', 'Potter, Harry', 'Jones, Hestia', '8:00 AM', { status: 2 }),
     appt('2', 'Doe, Jane', 'Jones, Hestia', '8:10 AM', { status: 5 }),
     appt('3', 'Test, Tom', 'Jones, Hestia', '8:20 AM', { status: 6 }),
     appt('4', 'Granger, Hermione', 'Jones, Hestia', '8:30 AM', { status: 3 }), // completed: on the schedule
+    appt('7', 'Longbottom, Neville', 'Jones, Hestia', '8:35 AM', { status: 4 }), // in progress: on the schedule
     appt('5', 'Weasley, Ron', 'Jones, Hestia', '8:40 AM', { status: 9 }), // unfamiliar: kept
   ]);
   const printed = await s.print({ mode: 'schedule', providers: ['Jones, Hestia'] });
-  assert.deepEqual(outline(printed.parts), ['cover Jones, Hestia', 'Hermione Granger 8:30 AM', 'Ron Weasley 8:40 AM']);
+  assert.deepEqual(outline(printed.parts), ['cover Jones, Hestia', 'Hermione Granger 8:30 AM', 'Neville Longbottom 8:35 AM', 'Ron Weasley 8:40 AM']);
+});
+
+test("chart: a cancelled appointment today is not today's appointment", async () => {
+  const { ehr, print } = setup({
+    patients: { [ALBUS]: albus({ lastExam: TODAY }) },
+    balances: { [ALBUS]: 0 },
+    days: { [dayKey(TODAY, LOCATION)]: [appt(ALBUS, 'Potter, Albus', 'Dumbledore, Albus', '10:10 AM', { status: 1 })] },
+  });
+  ehr.onScreen.patientId = ALBUS;
+  const printed = await print({ mode: 'chart', source: 'today' });
+  assert.equal(formsOf(printed.parts)[0]!.appointmentTime, '');
+  assert.match(printed.warnings.join(' '), /not on today's schedule/);
 });
 
 test('schedule: unreadable balance or detail is blank with a warning, missing DOB too, and the rest still prints', async () => {

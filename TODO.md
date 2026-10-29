@@ -12,7 +12,7 @@
 ## Open items (as of v0.1.3, 2026-10-14) — front desk trial under way; see HANDOFF.md
 - [ ] After the trial: ask whether to keep the patient list on the Provider Cover Page.
 - [ ] Not yet exercised live: the today-or-next chooser in the new code (needs a fake patient checked in today) and the Stop button (runs finish too fast to click).
-- [ ] Unverified: a status that is neither shown nor hidden today (e.g. a no-show not yet marked) — Rosebud hides only 2, 5, 6.
+- [x] Settled 2026-10-29 from RevolutionEHR's own constants (see "Cancelled appointments still printed"): hidden 1, 2, 5, 6; shown 0, 3, 4.
 - [x] ~~"□" glyph on the four checkbox items~~: moot since the 10/14 form (v0.1.4), which has no symbol-font items.
 - [ ] Possible later: more Pre-filled Fields (each new kind of value needs a code change, then appears on the settings page).
 - Done since the first list: form changes without code (settings page), blank PDF export (LibreOffice), Schedule Mode. Dropped: the Reason For Visit prompt (replaced by RFV in Comments).
@@ -203,3 +203,9 @@
 - The user sent a PDF of the 10/14 sheet with small changes. It was A4 (ONLYOFFICE export) and read "Byron? Y N", so the same changes were made in the repo's Letter-size sheet instead: "No Scribe?_____" -> "Scribe? Y   N", "No Extern?_____" -> "Extern? Y   N", "CL fit co-pay $_________" (3 more underscores), "Fit disc: 10%   15%" (wider spacing); and, asked for separately, G11 "Other______________" -> "Other" (no blank after it). Kept as `form/Routing Form 2026-10-27 (edited).xlsx`; exported with LibreOffice to Letter.
 - Every label Rosebud prints next to stayed exactly where it was, so the field positions are unchanged; template renamed "Routing Form 2026-10-27". Sample print checked.
 - Lesson: a PDF the user exports may be A4; check that `tools/find-text.mjs` reports `size 612 792` before using one.
+
+## Cancelled appointments still printed (2026-10-29, fixed, not yet released)
+- Report: a 10:10 appointment cancelled on a real day (10/30/2026) was gone from the schedule but still printed. Its status was **1**; Rosebud hid only 2, 5, 6 (inferred on 10/13 by matching the Agenda), and keeps unknown statuses on purpose.
+- RevolutionEHR's own constants (ScheduleWebServiceConstants in its commons.js): 0 ACTIVE, 1 CANCELLED, 2 RESCHEDULED, 3 COMPLETED, 4 IN_PROGRESS, 5 NO_SHOW, 6 PATIENT_CANCELLED. A test cancel and reschedule on the 9/27 fake day gave 6 and 2 (so the office's cancel and the patient-cancelled kind differ). The type-9 item left at 10:10 is not a patient appointment (no patientName) and was already ignored.
+- Fix: HIDDEN_STATUSES = 1, 2, 5, 6 (src/routingForms/index.ts); applies to Schedule Mode, Print only, and today's appointment in Chart Mode. Tests: status 1 in Schedule Mode and in Chart Mode's today; in progress (4) still prints.
+- Only status codes of the 10:10 item and per-status counts of that day were read (no names or other details).

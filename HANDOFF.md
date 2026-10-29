@@ -71,6 +71,7 @@ Details and reasons: [docs/ARCHITECTURE-HANDOFF.md](docs/ARCHITECTURE-HANDOFF.md
 ## Gotchas
 
 - RevolutionEHR's services need the `X-XSRF-TOKEN` header from the `XSRF-TOKEN` cookie; Rosebud calls them from the page with the session.
+- Appointment statuses (RevolutionEHR's ScheduleWebServiceConstants): 0 active, 1 cancelled, 2 rescheduled, 3 completed, 4 in progress, 5 no show, 6 patient cancelled. Rosebud skips 1, 2, 5, 6.
 - The schedule's location id is learned from the schedule page's own request; if missing, the user is asked to click the schedule's refresh button once.
 - pdf.js 6.x is set to report errors only (`verbosity`), because the blank form's font makes it warn, and Edge lists that under the extension's "Errors" button.
 - Preact must stay on 10.x (11 ignores `style` objects).
