@@ -58,7 +58,7 @@ function setup(data: FakeData, problem: string | null = null) {
 }
 
 const formsOf = (parts: PrintPart[]): FormValues[] => parts.flatMap((p) => (p.kind === 'form' ? [p.values] : []));
-const outline = (parts: PrintPart[]) => parts.map((p) => (p.kind === 'cover' ? `cover ${p.cover.provider}` : `${p.values.name} ${p.values.appointmentTime}`));
+const outline = (parts: PrintPart[]) => parts.map((p) => `${p.values.name} ${p.values.appointmentTime}`);
 const isUserError = (message: RegExp) => (e: unknown) => e instanceof UserError && message.test(e.message);
 const isAbortError = (e: unknown) => e instanceof DOMException && e.name === 'AbortError';
 
@@ -180,7 +180,7 @@ function scheduleDay(day: Appointment[], over: Partial<FakeData> = {}, problem: 
   return s;
 }
 
-test('schedule: providers in screen order, each behind a cover page, one earliest form per patient', async () => {
+test('schedule: providers in screen order, no cover page, one earliest form per patient', async () => {
   const s = scheduleDay([
     appt('1', 'Potter, Harry', 'Dumbledore, Albus', '10:00 AM'),
     appt('1', 'Potter, Harry', 'Dumbledore, Albus', '8:00 AM'),
@@ -191,24 +191,13 @@ test('schedule: providers in screen order, each behind a cover page, one earlies
   ]);
   const printed = await s.print({ mode: 'schedule', providers: ['Jones, Hestia', 'Dumbledore, Albus'] });
   assert.deepEqual(outline(printed.parts), [
-    'cover Jones, Hestia',
     'Tom Test 11:00 AM',
     'Harry Potter 1:00 PM',
-    'cover Dumbledore, Albus',
     'Harry Potter 8:00 AM',
     'Jane Doe 9:00 AM',
   ]);
   assert.equal(printed.count, 4);
-  const cover = printed.parts[3]!;
-  assert.ok(cover.kind === 'cover');
-  assert.deepEqual(cover.cover, {
-    provider: 'Dumbledore, Albus',
-    dateLabel: 'Wednesday 10/14/2026',
-    rows: [
-      { time: '8:00 AM', name: 'Harry Potter', examType: 'Long Medical' },
-      { time: '9:00 AM', name: 'Jane Doe', examType: 'Long Medical' },
-    ],
-  });
+  assert.equal(printed.parts.length, 4); // forms only
   assert.deepEqual(s.messages.slice(0, 1), ['Reading the schedule…']);
   assert.ok(s.messages.includes('Gathering patient details: 4 of 4'));
   assert.equal(s.messages.at(-1), 'Routing Forms completed: 4 of 4');
@@ -225,7 +214,7 @@ test('schedule: cancelled (1), rescheduled (2), no-show (5) and patient-cancelle
     appt('5', 'Weasley, Ron', 'Jones, Hestia', '8:40 AM', { status: 9 }), // unfamiliar: kept
   ]);
   const printed = await s.print({ mode: 'schedule', providers: ['Jones, Hestia'] });
-  assert.deepEqual(outline(printed.parts), ['cover Jones, Hestia', 'Hermione Granger 8:30 AM', 'Neville Longbottom 8:35 AM', 'Ron Weasley 8:40 AM']);
+  assert.deepEqual(outline(printed.parts), ['Hermione Granger 8:30 AM', 'Neville Longbottom 8:35 AM', 'Ron Weasley 8:40 AM']);
 });
 
 test("chart: a cancelled appointment today is not today's appointment", async () => {
@@ -255,7 +244,7 @@ test('schedule: unreadable balance or detail is blank with a warning, missing DO
   assert.equal(printed.warnings.length, 3);
 });
 
-test('schedule: only the open appointment, with no cover page', async () => {
+test('schedule: only the open appointment', async () => {
   const s = scheduleDay([appt('1', 'Potter, Harry', 'Jones, Hestia', '8:00 AM'), appt('1', 'Potter, Harry', 'Dumbledore, Albus', '2:00 PM'), appt('2', 'Doe, Jane', 'Jones, Hestia', '9:00 AM')]);
   s.ehr.onScreen.openAppointment = { patientId: '1', time: '2:00 PM' };
   const offer = await s.forms.offer('schedule', new AbortController().signal);
@@ -322,14 +311,11 @@ test('chart: a nickname prints in quotation marks between first and last name', 
   assert.equal(formsOf(printed.parts)[0]!.name, 'Albus "Alby" Potter');
 });
 
-test('schedule: nicknames on the forms and the cover page; none means the plain name', async () => {
+test('schedule: nicknames on the forms; none means the plain name', async () => {
   const s = scheduleDay([
     appt('1', 'Potter, Harry', 'Dumbledore, Albus', '8:00 AM', { nickname: 'Scarhead' }),
     appt('2', 'Doe, Jane', 'Dumbledore, Albus', '9:00 AM'),
   ]);
   const printed = await s.print({ mode: 'schedule', providers: ['Dumbledore, Albus'] });
-  assert.deepEqual(outline(printed.parts), ['cover Dumbledore, Albus', 'Harry "Scarhead" Potter 8:00 AM', 'Jane Doe 9:00 AM']);
-  const cover = printed.parts[0]!;
-  assert.ok(cover.kind === 'cover');
-  assert.deepEqual(cover.cover.rows.map((r) => r.name), ['Harry "Scarhead" Potter', 'Jane Doe']);
+  assert.deepEqual(outline(printed.parts), ['Harry "Scarhead" Potter 8:00 AM', 'Jane Doe 9:00 AM']);
 });

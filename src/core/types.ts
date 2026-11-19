@@ -18,18 +18,5 @@ export interface CalendarDate {
   day: number;
 }
 
-/** One line on a Provider Cover Page. */
-export interface CoverRow {
-  time: string;
-  name: string;
-  examType: string;
-}
-
-export interface CoverPage {
-  provider: string;
-  dateLabel: string;
-  rows: CoverRow[];
-}
-
-/** The pieces of a printed document, in order. */
-export type PrintPart = { kind: 'cover'; cover: CoverPage } | { kind: 'form'; values: FormValues };
+/** The pieces of a printed document, in order: one filled Routing Form each. */
+export type PrintPart = { kind: 'form'; values: FormValues };

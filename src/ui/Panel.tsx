@@ -45,7 +45,7 @@ function ScheduleChooser({ info, resolve }: { info: ScheduleInfo; resolve: (choi
   return (
     <>
       <p class="title">Routing Forms for {info.dateLabel}</p>
-      <p>Which providers? Each gets a cover page, then their patients by time.</p>
+      <p>Which providers? Their forms print one provider after another, each by time.</p>
       {info.providers.map((name) => (
         <label class="check">
           <input type="checkbox" checked={picked.includes(name)} onChange={() => toggle(name)} /> {name}

@@ -1,5 +1,5 @@
 {
-  "name": "Routing Form 2026-10-27",
+  "name": "Routing Form 2026-11-19",
   "blankPdf": "blank-routing-form.pdf",
   "font": "Helvetica",
   "fields": [
@@ -21,7 +21,8 @@
       "key": "appointmentTime",
       "x": 470,
       "y": 762.5,
-      "size": 10
+      "size": 10,
+      "maxWidth": 44
     },
     {
       "key": "name",

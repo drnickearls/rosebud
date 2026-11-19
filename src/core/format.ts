@@ -14,7 +14,7 @@ export function firstLast(chartName: string): string {
 }
 
 /**
- * The name as the Routing Form and cover page print it: "Potter, Albus" + "Alby" becomes
+ * The name as the Routing Form prints it: "Potter, Albus" + "Alby" becomes
  * Albus "Alby" Potter, as RevolutionEHR's chart header shows it. No nickname (or one that is
  * just the first name) prints the plain "Albus Potter".
  */

@@ -10,7 +10,7 @@
 - Read-only (never writes to a chart); all data stays on the PC.
 
 ## Open items (as of v0.1.3, 2026-10-14) — front desk trial under way; see HANDOFF.md
-- [ ] After the trial: ask whether to keep the patient list on the Provider Cover Page.
+- [x] Cover page: removed entirely in v0.1.9 at the user's request (forms only).
 - [ ] Not yet exercised live: the today-or-next chooser in the new code (needs a fake patient checked in today) and the Stop button (runs finish too fast to click).
 - [x] Settled 2026-10-29 from RevolutionEHR's own constants (see "Cancelled appointments still printed"): hidden 1, 2, 5, 6; shown 0, 3, 4.
 - [x] ~~"□" glyph on the four checkbox items~~: moot since the 10/14 form (v0.1.4), which has no symbol-font items.
@@ -209,3 +209,8 @@
 - RevolutionEHR's own constants (ScheduleWebServiceConstants in its commons.js): 0 ACTIVE, 1 CANCELLED, 2 RESCHEDULED, 3 COMPLETED, 4 IN_PROGRESS, 5 NO_SHOW, 6 PATIENT_CANCELLED. A test cancel and reschedule on the 9/27 fake day gave 6 and 2 (so the office's cancel and the patient-cancelled kind differ). The type-9 item left at 10:10 is not a patient appointment (no patientName) and was already ignored.
 - Fix: HIDDEN_STATUSES = 1, 2, 5, 6 (src/routingForms/index.ts); applies to Schedule Mode, Print only, and today's appointment in Chart Mode. Tests: status 1 in Schedule Mode and in Chart Mode's today; in progress (4) still prints.
 - Only status codes of the 10:10 item and per-status counts of that day were read (no names or other details).
+
+## Forms only, Room, and IFD (2026-11-19, released as v0.1.9)
+- Schedule Mode prints only the Routing Forms, still grouped by provider (screen order) and by time; the Provider Cover Page is gone (types, PDF drawing, planning, and the chooser text). Tests updated.
+- Built-in form `form/Routing Form 2026-11-19 (edited).xlsx`: the top line reads "Appointment Time:_________   Room_______" (one cell, H1, so the Appointment Time text is not clipped by a cell to its right); "____TOT   _____IFD" in J41. Every other label is where it was. Template "Routing Form 2026-11-19": appointmentTime maxWidth 44 so a time never runs into Room.
+- The user first wanted Room "right at the edge of the page"; printers can't print within about 0.17 to 0.25 inch of the edge, and a sheet row can't sit above row 1, so it was kept on the top line.

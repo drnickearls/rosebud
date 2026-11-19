@@ -36,8 +36,8 @@ The start time of the patient's earliest appointment on the Routing Form's date,
 **RFV (Reason For Visit)**:
 The short reason for the appointment, typed by staff into the appointment's Comments box after the letters "RFV", and printed on the Routing Form's Reason For Visit line after the exam type. Ends at the first line break.
 
-**Provider Cover Page**:
-A summary page in a multi-provider print that names one provider and how many exams they have, placed before that provider's Routing Forms so where one provider's stack ends and the next begins is obvious. Not a Routing Form.
+**Provider Cover Page** (retired in v0.1.9):
+A summary page that used to come before each provider's Routing Forms in a Schedule Mode print. The user asked for forms only (2026-11-17).
 
 **Form Settings**:
 The extension's settings page (opened from the toolbar button or the extension's "Extension options") where the office manager replaces the Routing Form artwork, drags the fields into place, test prints with a made-up patient, and saves it on that computer. **Share form** writes the form as a file into the `forms` folder inside the Rosebud folder, and **Load a form file** on another computer reads it from there. The result is still a Form Template; "reformatting the form" means using this, not changing Rosebud's code.

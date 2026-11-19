@@ -17,16 +17,14 @@ const values: FormValues = {
   reasonForVisit: 'Cataract Post Op Exam — 1 month post op',
 };
 
-test('one form is one page, covers add pages, cover paginates', async () => {
-  const rows = Array.from({ length: 45 }, (_, i) => ({ time: '9:00 AM', name: `Patient ${i}`, examType: 'Long Medical' }));
+test('one form is one page', async () => {
   const parts: PrintPart[] = [
-    { kind: 'cover', cover: { provider: 'Provider A', dateLabel: 'Tue 10/13/2026', rows } },
     { kind: 'form', values },
     { kind: 'form', values: { ...values, name: 'Zoë 中' } }, // an unencodable character must not fail the print
   ];
   const bytes = await buildPdf(parts, bundledAssets);
   const doc = await PDFDocument.load(bytes);
-  assert.equal(doc.getPageCount(), 2 + 2); // 45 rows = 2 cover pages, plus 2 forms
+  assert.equal(doc.getPageCount(), 2);
   assert.deepEqual(doc.getPage(0).getSize(), { width: 612, height: 792 });
 });
 

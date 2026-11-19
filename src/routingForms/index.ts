@@ -11,7 +11,7 @@
  */
 
 import { cleanExamType, parseRfv } from '../core/appointment.js';
-import { dateLabel, firstLast, formatUsDate, formValues, printedName, sameDate, timeToMinutes } from '../core/format.js';
+import { dateLabel, firstLast, formatUsDate, formValues, sameDate, timeToMinutes } from '../core/format.js';
 import { buildPdf, type FormAssets } from '../core/pdf.js';
 import { groupByProvider } from '../core/schedule.js';
 import type { CalendarDate, PrintPart } from '../core/types.js';
@@ -54,7 +54,7 @@ export interface PrintOptions {
 export interface Printed {
   pdf: Uint8Array;
   parts: PrintPart[];
-  /** Routing Forms printed (cover pages not counted). */
+  /** Routing Forms printed. */
   count: number;
   warnings: string[];
 }
@@ -100,9 +100,9 @@ interface Visit {
   rfv: string | null;
 }
 
-/** What will be printed: groups in order, each optionally behind a Provider Cover Page. */
+/** What will be printed: groups in order (one per provider), each its forms by time. */
 interface Plan {
-  groups: { provider: string; cover: boolean; visits: Visit[] }[];
+  groups: { provider: string; visits: Visit[] }[];
   /** Warnings for the user: what could not be read and is blank. */
   notes: string[];
 }
@@ -186,7 +186,7 @@ export function createRoutingForms({ ehr, form, now }: RoutingFormsDeps): Routin
 
     if (!patient.dob) notes.push(`${name} has no date of birth in RevolutionEHR; D.O.B. and Age are blank on the form.`);
     return {
-      groups: [{ provider: visit.provider, cover: false, visits: [{ patientId: id, chartName: patient.chartName, nickname: patient.nickname, dob: patient.dob, balance, ...visit }] }],
+      groups: [{ provider: visit.provider, visits: [{ patientId: id, chartName: patient.chartName, nickname: patient.nickname, dob: patient.dob, balance, ...visit }] }],
       notes,
     };
   }
@@ -261,11 +261,10 @@ export function createRoutingForms({ ehr, form, now }: RoutingFormsDeps): Routin
         rfv: parseRfv(detail?.comments),
       });
     });
-    // One patient asked for from the open panel needs no cover page; a provider's stack always gets one.
-    return { groups: groups.map((g) => ({ provider: g.provider, cover: byProvider, visits: g.entries.map((a) => visitOf.get(a)!) })), notes };
+    return { groups: groups.map((g) => ({ provider: g.provider, visits: g.entries.map((a) => visitOf.get(a)!) })), notes };
   }
 
-  /** The plan as printed parts: each group's cover page (if any), then its forms. */
+  /** The plan as printed parts: each group's forms, groups in order. */
   function partsOf(plan: Plan): PrintPart[] {
     return plan.groups.flatMap((group): PrintPart[] => {
       const forms = group.visits.map(
@@ -277,17 +276,7 @@ export function createRoutingForms({ ehr, form, now }: RoutingFormsDeps): Routin
           ),
         }),
       );
-      if (!group.cover) return forms;
-      const first = group.visits[0]!;
-      const cover: PrintPart = {
-        kind: 'cover',
-        cover: {
-          provider: group.provider,
-          dateLabel: dateLabel(first.date),
-          rows: group.visits.map((v) => ({ time: v.time, name: printedName(v.chartName, v.nickname), examType: cleanExamType(v.examType) })),
-        },
-      };
-      return [cover, ...forms];
+      return forms;
     });
   }
 
